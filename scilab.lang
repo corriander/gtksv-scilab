@@ -1,0 +1,2670 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Author: Alex Corrie
+ Copyright (C) 2011-2012 Alex Corrie <ajccode@gmail.com>
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+
+ You should have received a copy of the GNU Library General Public
+ License along with this library; if not, write to the
+ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
+
+-->
+<language id="scilab" _name="Scilab" version="2.0" _section="Scientific">
+	<metadata>
+		<property name="mimetypes">text/x-sce</property>
+		<property name="globs">*.sce;*.sci</property>
+		<property name="line-comment-start">//</property>
+	</metadata>
+
+  <styles>
+		<!-- Comments -->
+		<style id="comment"  						_name="Comment"  						map-to="def:comment"/>
+		<style id="comment-address" 		_name="URL / eMail" 				map-to="def:underlined"/>
+		<style id="comment-note"				_name="Note in Comment" 		map-to="def:note"/>
+		<style id="latex" 							_name="Latex" 							map-to="latex:inline-math"/>
+		<style id="string"   						_name="String"   						map-to="def:string"/>
+		<!-- Numbers -->
+		<style id="boolean" 						_name="Boolean" 						map-to="def:boolean"/>
+		<style id="number" 							_name="Number" 							map-to="def:number"/>
+		<style id="floating-point" 			_name="Floating Point" 			map-to="def:floating-point"/>
+		<style id="field" 							_name="Field" 							/>
+		<!-- Operators and special characters -->
+ 		<style id="operator" 						_name="Operator" 						map-to="def:operator"/>
+ 		<style id="openclose" 					_name="Brackets" 						map-to="def:operator"/> 
+		<style id="special-char" 				_name="Special Characters" 	map-to="def:special-char"/>
+		<!-- Keywords -->
+		<style id="reserved-constant" 	_name="Reserved Constant" 	map-to="def:special-constant"/>
+		<style id="primitive" 					_name="Primitive"						map-to="def:function"/>
+		<style id="macro"    						_name="Macro"    						map-to="def:function"/>
+		<style id="control" 						_name="Control Keyword" 		/>
+		<style id="structure" 					_name="Structural Keyword" 	/>
+		<style id="functionkwd" 				_name="Function Keyword" 		map-to="def:keyword"/>
+  </styles>
+
+  <definitions>
+
+		<!-- Numbers and data structures -->
+
+    <context id="boolean" style-ref="boolean">
+			<match>(?&lt;![\w%\.])%[fFtT]\%]</match>
+		</context>
+
+    <context id="number" style-ref="number">
+      <match>\%[[0-9]*\%]</match>
+    </context>
+			
+    <context id="floating-point-number" style-ref="floating-point">
+       <match>(?&lt;![\w%])([0-9]*\.)?[0-9]*?([0-9]+[DdEe])[+-]?([0-9]*\.?[0-9]*)?</match>
+    </context>
+
+		<context id="field" style-ref="field">
+			<match>(?&lt;=\w)\.[a-zA-Z][a-zA-Z0-9%#?\_]*</match>
+		</context>
+
+		<!-- Operators and special characters -->
+
+		<define-regex id="operators" extended="true">
+			\+ | \- | 
+			\.?\*\.? | 
+			[=&lt;&gt;]?=(?!=) | &lt;?&gt; | &lt; |
+			\.?\/\.?(?!\/) |
+			\.?\\\.? |
+			\.?\^ |
+			\~ | \| | &amp;
+		</define-regex>
+
+		<context id="operator" style-ref="operator">
+			<match>\%{operators}</match>
+		</context>
+
+		<context id="openclose" style-ref="openclose">
+			<match>[\(\)\[\]]</match>
+		</context>   
+
+		<context id="special-character" style-ref="special-char">
+			<match>\$|:|\.{2}</match>
+		</context>
+
+		<!-- Commenting -->
+
+    <context id="comment-address" class-disabled="no-spell-check">
+      <include>
+        <context ref="def:net-address"/>
+        <context ref="def:email-address"/>
+      </include>
+    </context>
+
+    <context id="comment-note" extend-parent="false" style-ref="comment-note" class="no-spell-check comment-note">
+      <match>\b(FIXME|TODO|XXX)\b</match>
+    </context>
+
+		<context id="latex" extend-parent="false" style-ref="latex" class="no-spell-check">
+			<start>\$</start>
+			<end>\$</end>
+<!--			<include>-->
+<!--				<context ref="latex:in-inline-math"/>-->
+<!--			</include>-->
+		</context>
+
+    <context id="line-comment" style-ref="comment" end-at-line-end="true" class="comment" class-disabled="no-spell-check">
+      <start>//</start>
+			<include>
+				<context ref="comment-address"/>
+				<context ref="comment-note"/>
+				<context ref="latex"/>
+			</include>
+    </context>
+
+    <context id="double-quoted-string" style-ref="string" end-at-line-end="true" class="string" class-disabled="no-spell-check">
+      <start>"</start>
+      <end>"</end>
+      <include>
+				<context style-ref="def:special-char">
+          <match>""</match>
+        </context>
+        <context ref="def:escape"/>
+        <context ref="def:line-continue"/>
+				<context ref="latex"/>
+      </include>
+    </context>
+
+
+		<!-- Strings -->
+
+    <context id="single-quoted-string" style-ref="string" end-at-line-end="true" class="string" class-disabled="no-spell-check">
+       <!--
+       Avoid detecting the transpose operator ' as the start of a string. Ensure
+       any ' directly following a variable name a-Z,0-9,_ closing bracket )]} or
+       period is not included in the match-->
+      <start>(?&lt;![0-9a-zA-Z_)\]}\.])'</start>
+      <end>'</end>
+      <include>
+        <context style-ref="def:special-char">
+          <match>''</match>
+        </context>
+				<context ref="def:escape"/>
+        <context ref="def:line-continue"/>
+				<context ref="latex"/>
+      </include>
+    </context>
+
+		<define-regex id="reserved-constants-regex" extended="true">
+			(?&lt;![\w%\.])%(pi | eps | inf | nan | e | i | z | s)\%]
+		</define-regex>
+       
+    <context id="reserved-constants" style-ref="reserved-constant">
+			<match>\%{reserved-constants-regex}</match>
+    </context>
+
+		<context id="controlkwd" style-ref="control">
+			<prefix>(?&lt;![\w%\.])</prefix>
+			<keyword>abort</keyword>
+			<keyword>return</keyword>
+			<keyword>break</keyword>
+			<keyword>continue</keyword>
+			<keyword>exit</keyword>
+			<keyword>pause</keyword>
+			<keyword>quit</keyword>
+			<keyword>resume</keyword>
+		</context>
+
+		<context id="structurekwd" style-ref="structure">
+			<prefix>(?&lt;![\w%\.])</prefix>
+			<keyword>do</keyword>			
+			<keyword>else</keyword>
+			<keyword>elseif</keyword>
+			<keyword>end</keyword>
+			<keyword>for</keyword>
+			<keyword>if</keyword>
+			<keyword>then</keyword>
+			<keyword>while</keyword>
+			<keyword>select</keyword>
+			<keyword>case</keyword>
+			<keyword>try</keyword>
+			<keyword>catch</keyword>
+	  </context>
+
+		<context id="functionkwd" style-ref="functionkwd">
+			<prefix>(?&lt;![\w%\.])</prefix>
+			<keyword>function</keyword>
+			<keyword>endfunction</keyword>
+		</context>
+
+<!--		<context id="functionref" style-ref="functionref">-->
+<!--			<match>(?&lt;=^\s*.*=\s*?).*(?=\()</match>-->
+<!--		</context> FIXME see main context block for reason -->
+
+		<context id="primitives" style-ref="primitive">
+			<prefix>(?&lt;![\w%\.])</prefix>			
+			<keyword>about</keyword>
+			<keyword>backslash</keyword>
+			<keyword>slash</keyword>
+			<keyword>argn</keyword>
+			<keyword>banner</keyword>
+			<keyword>clear</keyword>
+			<keyword>clearfun</keyword>
+			<keyword>clearglobal</keyword>
+			<keyword>comp</keyword>
+			<keyword>debug</keyword>
+			<keyword>delbpt</keyword>
+			<keyword>dispbpt</keyword>
+			<keyword>errcatch</keyword>
+			<keyword>errclear</keyword>
+			<keyword>error</keyword>
+			<keyword>exists</keyword>
+			<keyword>format</keyword>
+			<keyword>funcprot</keyword>
+			<keyword>funptr</keyword>
+			<keyword>getdebuginfo</keyword>
+			<keyword>getmd5</keyword>
+			<keyword>getmemory</keyword>
+			<keyword>getmodules</keyword>
+			<keyword>getos</keyword>
+			<keyword>getscilabmode</keyword>
+			<keyword>getvariablesonstack</keyword>
+			<keyword>getversion</keyword>
+			<keyword>global</keyword>
+			<keyword>gstacksize</keyword>
+			<keyword>ieee</keyword>
+			<keyword>intppty</keyword>
+			<keyword>iserror</keyword>
+			<keyword>isglobal</keyword>
+			<keyword>lasterror</keyword>
+			<keyword>macr2lst</keyword>
+			<keyword>macr2tree</keyword>
+			<keyword>matrix</keyword>
+			<keyword>mode</keyword>
+			<keyword>mtlb_mode</keyword>
+			<keyword>newfun</keyword>
+			<keyword>poly</keyword>
+			<keyword>predef</keyword>
+			<keyword>readgateway</keyword>
+			<keyword>sciargs</keyword>
+			<keyword>setbpt</keyword>
+			<keyword>stacksize</keyword>
+			<keyword>testmatrix</keyword>
+			<keyword>type</keyword>
+			<keyword>typename</keyword>
+			<keyword>user</keyword>
+			<keyword>varn</keyword>
+			<keyword>warning</keyword>
+			<keyword>what</keyword>
+			<keyword>where</keyword>
+			<keyword>who</keyword>
+			<keyword>with_module</keyword>
+			<keyword>bvode</keyword>
+			<keyword>dasrt</keyword>
+			<keyword>dassl</keyword>
+			<keyword>feval</keyword>
+			<keyword>impl</keyword>
+			<keyword>int2d</keyword>
+			<keyword>int3d</keyword>
+			<keyword>intg</keyword>
+			<keyword>ode</keyword>
+			<keyword>odedc</keyword>
+			<keyword>imag</keyword>
+			<keyword>imult</keyword>
+			<keyword>isreal</keyword>
+			<keyword>real</keyword>
+			<keyword>rat</keyword>
+			<keyword>diag</keyword>
+			<keyword>eye</keyword>
+			<keyword>ones</keyword>
+			<keyword>rand</keyword>
+			<keyword>zeros</keyword>
+			<keyword>ceil</keyword>
+			<keyword>double</keyword>
+			<keyword>floor</keyword>
+			<keyword>frexp</keyword>
+			<keyword>int</keyword>
+			<keyword>nearfloat</keyword>
+			<keyword>number_properties</keyword>
+			<keyword>round</keyword>
+			<keyword>cumprod</keyword>
+			<keyword>cumsum</keyword>
+			<keyword>kron</keyword>
+			<keyword>prod</keyword>
+			<keyword>sum</keyword>
+			<keyword>tril</keyword>
+			<keyword>triu</keyword>
+			<keyword>dsearch</keyword>
+			<keyword>gsort</keyword>
+			<keyword>acos</keyword>
+			<keyword>asin</keyword>
+			<keyword>atan</keyword>
+			<keyword>conj</keyword>
+			<keyword>cos</keyword>
+			<keyword>sin</keyword>
+			<keyword>tan</keyword>
+			<keyword>abs</keyword>
+			<keyword>amell</keyword>
+			<keyword>and</keyword>
+			<keyword>delip</keyword>
+			<keyword>exp</keyword>
+			<keyword>isdef</keyword>
+			<keyword>isequal</keyword>
+			<keyword>isequalbitwise</keyword>
+			<keyword>log</keyword>
+			<keyword>log1p</keyword>
+			<keyword>lstsize</keyword>
+			<keyword>max</keyword>
+			<keyword>min</keyword>
+			<keyword>or</keyword>
+			<keyword>sign</keyword>
+			<keyword>size</keyword>
+			<keyword>sqrt</keyword>
+			<keyword>balanc</keyword>
+			<keyword>bdiag</keyword>
+			<keyword>chol</keyword>
+			<keyword>det</keyword>
+			<keyword>ereduc</keyword>
+			<keyword>expm</keyword>
+			<keyword>fstair</keyword>
+			<keyword>hess</keyword>
+			<keyword>inv</keyword>
+			<keyword>lsq</keyword>
+			<keyword>lu</keyword>
+			<keyword>qr</keyword>
+			<keyword>rankqr</keyword>
+			<keyword>rcond</keyword>
+			<keyword>schur</keyword>
+			<keyword>spec</keyword>
+			<keyword>svd</keyword>
+			<keyword>bsplin3val</keyword>
+			<keyword>cshep2d</keyword>
+			<keyword>eval_cshep2d</keyword>
+			<keyword>interp</keyword>
+			<keyword>interp2d</keyword>
+			<keyword>interp3d</keyword>
+			<keyword>linear_interpn</keyword>
+			<keyword>lsq_splin</keyword>
+			<keyword>splin</keyword>
+			<keyword>splin2d</keyword>
+			<keyword>splin3d</keyword>
+			<keyword>contr</keyword>
+			<keyword>dhinf</keyword>
+			<keyword>findBD</keyword>
+			<keyword>freq</keyword>
+			<keyword>hinf</keyword>
+			<keyword>linmeq</keyword>
+			<keyword>ltitr</keyword>
+			<keyword>mucomp</keyword>
+			<keyword>ppol</keyword>
+			<keyword>ricc</keyword>
+			<keyword>rtitr</keyword>
+			<keyword>sident</keyword>
+			<keyword>sorder</keyword>
+			<keyword>bezout</keyword>
+			<keyword>clean</keyword>
+			<keyword>coeff</keyword>
+			<keyword>degree</keyword>
+			<keyword>ldiv</keyword>
+			<keyword>residu</keyword>
+			<keyword>roots</keyword>
+			<keyword>sfact</keyword>
+			<keyword>simp</keyword>
+			<keyword>simp_mode</keyword>
+			<keyword>corr</keyword>
+			<keyword>remez</keyword>
+			<keyword>rpem</keyword>
+			<keyword>syredi</keyword>
+			<keyword>fftw</keyword>
+			<keyword>fftw_flags</keyword>
+			<keyword>fftw_forget_wisdom</keyword>
+			<keyword>get_fftw_wisdom</keyword>
+			<keyword>set_fftw_wisdom</keyword>
+			<keyword>beta</keyword>
+			<keyword>calerf</keyword>
+			<keyword>dlgamma</keyword>
+			<keyword>gamma</keyword>
+			<keyword>gammaln</keyword>
+			<keyword>legendre</keyword>
+			<keyword>grand</keyword>
+			<keyword>dnaupd</keyword>
+			<keyword>dneupd</keyword>
+			<keyword>dsaupd</keyword>
+			<keyword>dseupd</keyword>
+			<keyword>znaupd</keyword>
+			<keyword>zneupd</keyword>
+			<keyword>cdfbet</keyword>
+			<keyword>cdfbin</keyword>
+			<keyword>cdfchi</keyword>
+			<keyword>cdfchn</keyword>
+			<keyword>cdff</keyword>
+			<keyword>cdffnc</keyword>
+			<keyword>cdfgam</keyword>
+			<keyword>cdfnbn</keyword>
+			<keyword>cdfnor</keyword>
+			<keyword>cdfpoi</keyword>
+			<keyword>cdft</keyword>
+			<keyword>full</keyword>
+			<keyword>ludel</keyword>
+			<keyword>lufact</keyword>
+			<keyword>luget</keyword>
+			<keyword>lusolve</keyword>
+			<keyword>mtlb_sparse</keyword>
+			<keyword>nnz</keyword>
+			<keyword>sparse</keyword>
+			<keyword>spchol</keyword>
+			<keyword>spcompack</keyword>
+			<keyword>spget</keyword>
+			<keyword>spones</keyword>
+			<keyword>res_with_prec</keyword>
+			<keyword>taucs_chdel</keyword>
+			<keyword>taucs_chfact</keyword>
+			<keyword>taucs_chget</keyword>
+			<keyword>taucs_chinfo</keyword>
+			<keyword>taucs_chsolve</keyword>
+			<keyword>umf_ludel</keyword>
+			<keyword>umf_lufact</keyword>
+			<keyword>umf_luget</keyword>
+			<keyword>umf_luinfo</keyword>
+			<keyword>umf_lusolve</keyword>
+			<keyword>umfpack</keyword>
+			<keyword>fsolve</keyword>
+			<keyword>lsqrsolve</keyword>
+			<keyword>optim</keyword>
+			<keyword>qld</keyword>
+			<keyword>qp_solve</keyword>
+			<keyword>readmps</keyword>
+			<keyword>semidef</keyword>
+			<keyword>addf</keyword>
+			<keyword>ldivf</keyword>
+			<keyword>mulf</keyword>
+			<keyword>rdivf</keyword>
+			<keyword>subf</keyword>
+			<keyword>basename</keyword>
+			<keyword>chdir</keyword>
+			<keyword>copyfile</keyword>
+			<keyword>createdir</keyword>
+			<keyword>deletefile</keyword>
+			<keyword>fileext</keyword>
+			<keyword>fileinfo</keyword>
+			<keyword>fileparts</keyword>
+			<keyword>filesep</keyword>
+			<keyword>findfiles</keyword>
+			<keyword>fprintfMat</keyword>
+			<keyword>fscanfMat</keyword>
+			<keyword>fullpath</keyword>
+			<keyword>get_absolute_file_path</keyword>
+			<keyword>getdrives</keyword>
+			<keyword>getlongpathname</keyword>
+			<keyword>getrelativefilename</keyword>
+			<keyword>getshortpathname</keyword>
+			<keyword>isdir</keyword>
+			<keyword>isfile</keyword>
+			<keyword>maxfiles</keyword>
+			<keyword>mclearerr</keyword>
+			<keyword>mclose</keyword>
+			<keyword>meof</keyword>
+			<keyword>merror</keyword>
+			<keyword>mfprintf</keyword>
+			<keyword>mfscanf</keyword>
+			<keyword>mget</keyword>
+			<keyword>mgetl</keyword>
+			<keyword>mgetstr</keyword>
+			<keyword>mopen</keyword>
+			<keyword>movefile</keyword>
+			<keyword>mput</keyword>
+			<keyword>mputl</keyword>
+			<keyword>mputstr</keyword>
+			<keyword>mseek</keyword>
+			<keyword>mtell</keyword>
+			<keyword>newest</keyword>
+			<keyword>pathconvert</keyword>
+			<keyword>pathsep</keyword>
+			<keyword>pwd</keyword>
+			<keyword>removedir</keyword>
+			<keyword>file</keyword>
+			<keyword>getenv</keyword>
+			<keyword>getio</keyword>
+			<keyword>getpid</keyword>
+			<keyword>host</keyword>
+			<keyword>load</keyword>
+			<keyword>read</keyword>
+			<keyword>read4b</keyword>
+			<keyword>readb</keyword>
+			<keyword>save</keyword>
+			<keyword>setenv</keyword>
+			<keyword>unix</keyword>
+			<keyword>writb</keyword>
+			<keyword>write</keyword>
+			<keyword>write4b</keyword>
+			<keyword>Matplot</keyword>
+			<keyword>Matplot1</keyword>
+			<keyword>champ</keyword>
+			<keyword>champ1</keyword>
+			<keyword>contour2di</keyword>
+			<keyword>fec</keyword>
+			<keyword>grayplot</keyword>
+			<keyword>plot2d</keyword>
+			<keyword>plot2d1</keyword>
+			<keyword>plot2d2</keyword>
+			<keyword>plot2d3</keyword>
+			<keyword>plot2d4</keyword>
+			<keyword>geom3d</keyword>
+			<keyword>param3d</keyword>
+			<keyword>param3d1</keyword>
+			<keyword>plot3d</keyword>
+			<keyword>plot3d1</keyword>
+			<keyword>captions</keyword>
+			<keyword>xtitle</keyword>
+			<keyword>newaxes</keyword>
+			<keyword>rotate_axes</keyword>
+			<keyword>unzoom</keyword>
+			<keyword>zoom_rect</keyword>
+			<keyword>drawaxis</keyword>
+			<keyword>drawlater</keyword>
+			<keyword>drawnow</keyword>
+			<keyword>xarc</keyword>
+			<keyword>xarcs</keyword>
+			<keyword>xarrows</keyword>
+			<keyword>xfarc</keyword>
+			<keyword>xfarcs</keyword>
+			<keyword>xfrect</keyword>
+			<keyword>xrect</keyword>
+			<keyword>xrects</keyword>
+			<keyword>copy</keyword>
+			<keyword>delete</keyword>
+			<keyword>draw</keyword>
+			<keyword>glue</keyword>
+			<keyword>is_handle_valid</keyword>
+			<keyword>relocate_handle</keyword>
+			<keyword>swap_handles</keyword>
+			<keyword>unglue</keyword>
+			<keyword>xclick</keyword>
+			<keyword>xgetmouse</keyword>
+			<keyword>xfpoly</keyword>
+			<keyword>xfpolys</keyword>
+			<keyword>xpoly</keyword>
+			<keyword>xpolys</keyword>
+			<keyword>get</keyword>
+			<keyword>set</keyword>
+			<keyword>stringbox</keyword>
+			<keyword>xlfont</keyword>
+			<keyword>xstring</keyword>
+			<keyword>xstringb</keyword>
+			<keyword>move</keyword>
+			<keyword>havewindow</keyword>
+			<keyword>show_window</keyword>
+			<keyword>winsid</keyword>
+			<keyword>clear_pixmap</keyword>
+			<keyword>rubberbox</keyword>
+			<keyword>show_pixmap</keyword>
+			<keyword>xchange</keyword>
+			<keyword>xdel</keyword>
+			<keyword>xget</keyword>
+			<keyword>xgetech</keyword>
+			<keyword>xgraduate</keyword>
+			<keyword>xgrid</keyword>
+			<keyword>xname</keyword>
+			<keyword>xpause</keyword>
+			<keyword>xsegs</keyword>
+			<keyword>xset</keyword>
+			<keyword>xsetech</keyword>
+			<keyword>xs2bmp</keyword>
+			<keyword>xs2eps</keyword>
+			<keyword>xs2gif</keyword>
+			<keyword>xs2jpg</keyword>
+			<keyword>xs2pdf</keyword>
+			<keyword>xs2png</keyword>
+			<keyword>xs2ppm</keyword>
+			<keyword>xs2ps</keyword>
+			<keyword>xs2svg</keyword>
+			<keyword>uiDisplayTree</keyword>
+			<keyword>delmenu</keyword>
+			<keyword>exportUI</keyword>
+			<keyword>getcallbackobject</keyword>
+			<keyword>getinstalledlookandfeels</keyword>
+			<keyword>getlookandfeel</keyword>
+			<keyword>messagebox</keyword>
+			<keyword>printfigure</keyword>
+			<keyword>printsetupbox</keyword>
+			<keyword>progressionbar</keyword>
+			<keyword>setlookandfeel</keyword>
+			<keyword>setmenu</keyword>
+			<keyword>toolbar</keyword>
+			<keyword>toprint</keyword>
+			<keyword>uicontrol</keyword>
+			<keyword>uigetcolor</keyword>
+			<keyword>uigetdir</keyword>
+			<keyword>uigetfile</keyword>
+			<keyword>uigetfont</keyword>
+			<keyword>uimenu</keyword>
+			<keyword>uiputfile</keyword>
+			<keyword>unsetmenu</keyword>
+			<keyword>usecanvas</keyword>
+			<keyword>waitbar</keyword>
+			<keyword>x_choose</keyword>
+			<keyword>x_choose_modeless</keyword>
+			<keyword>x_dialog</keyword>
+			<keyword>x_mdialog</keyword>
+			<keyword>definedfields</keyword>
+			<keyword>getfield</keyword>
+			<keyword>list</keyword>
+			<keyword>lsslist</keyword>
+			<keyword>lstcat</keyword>
+			<keyword>mlist</keyword>
+			<keyword>rlist</keyword>
+			<keyword>setfield</keyword>
+			<keyword>tlist</keyword>
+			<keyword>bool2s</keyword>
+			<keyword>find</keyword>
+			<keyword>iconvert</keyword>
+			<keyword>int8</keyword>
+			<keyword>inttype</keyword>
+			<keyword>ascii</keyword>
+			<keyword>code2str</keyword>
+			<keyword>convstr</keyword>
+			<keyword>emptystr</keyword>
+			<keyword>grep</keyword>
+			<keyword>isalphanum</keyword>
+			<keyword>isascii</keyword>
+			<keyword>isdigit</keyword>
+			<keyword>isletter</keyword>
+			<keyword>length</keyword>
+			<keyword>part</keyword>
+			<keyword>regexp</keyword>
+			<keyword>str2code</keyword>
+			<keyword>strcat</keyword>
+			<keyword>strchr</keyword>
+			<keyword>strcmp</keyword>
+			<keyword>strcspn</keyword>
+			<keyword>strindex</keyword>
+			<keyword>string</keyword>
+			<keyword>stripblanks</keyword>
+			<keyword>strncpy</keyword>
+			<keyword>strrchr</keyword>
+			<keyword>strrev</keyword>
+			<keyword>strsplit</keyword>
+			<keyword>strspn</keyword>
+			<keyword>strstr</keyword>
+			<keyword>strsubst</keyword>
+			<keyword>strtod</keyword>
+			<keyword>strtok</keyword>
+			<keyword>tokens</keyword>
+			<keyword>beep</keyword>
+			<keyword>getdate</keyword>
+			<keyword>realtime</keyword>
+			<keyword>sleep</keyword>
+			<keyword>timer</keyword>
+			<keyword>diary</keyword>
+			<keyword>disp</keyword>
+			<keyword>mprintf</keyword>
+			<keyword>msprintf</keyword>
+			<keyword>print</keyword>
+			<keyword>scicosim</keyword>
+			<keyword>curblock</keyword>
+			<keyword>getblocklabel</keyword>
+			<keyword>getscicosvars</keyword>
+			<keyword>phase_simulation</keyword>
+			<keyword>pointer_xproperty</keyword>
+			<keyword>scicos_time</keyword>
+			<keyword>set_blockerror</keyword>
+			<keyword>set_xproperty</keyword>
+			<keyword>buildouttb</keyword>
+			<keyword>loadScicos</keyword>
+			<keyword>scicos_debug</keyword>
+			<keyword>var2vec</keyword>
+			<keyword>vec2var</keyword>
+			<keyword>xcos</keyword>
+			<keyword>xls_open</keyword>
+			<keyword>xls_read</keyword>
+			<keyword>clc</keyword>
+			<keyword>lines</keyword>
+			<keyword>prompt</keyword>
+			<keyword>tohome</keyword>
+			<keyword>completion</keyword>
+			<keyword>addhistory</keyword>
+			<keyword>displayhistory</keyword>
+			<keyword>gethistory</keyword>
+			<keyword>gethistoryfile</keyword>
+			<keyword>historymanager</keyword>
+			<keyword>historysize</keyword>
+			<keyword>loadhistory</keyword>
+			<keyword>removelinehistory</keyword>
+			<keyword>resethistory</keyword>
+			<keyword>saveafterncommands</keyword>
+			<keyword>saveconsecutivecommands</keyword>
+			<keyword>savehistory</keyword>
+			<keyword>sethistoryfile</keyword>
+			<keyword>matfile_close</keyword>
+			<keyword>matfile_listvar</keyword>
+			<keyword>matfile_open</keyword>
+			<keyword>matfile_varreadnext</keyword>
+			<keyword>matfile_varwrite</keyword>
+			<keyword>deff</keyword>
+			<keyword>exec</keyword>
+			<keyword>execstr</keyword>
+			<keyword>lib</keyword>
+			<keyword>librarieslist</keyword>
+			<keyword>libraryinfo</keyword>
+			<keyword>whereis</keyword>
+			<keyword>addinter</keyword>
+			<keyword>c_link</keyword>
+			<keyword>call</keyword>
+			<keyword>fort</keyword>
+			<keyword>getdynlibext</keyword>
+			<keyword>ilib_verbose</keyword>
+			<keyword>link</keyword>
+			<keyword>ulink</keyword>
+			<keyword>TCL_DeleteInterp</keyword>
+			<keyword>TCL_EvalFile</keyword>
+			<keyword>TCL_EvalStr</keyword>
+			<keyword>TCL_ExistArray</keyword>
+			<keyword>TCL_ExistInterp</keyword>
+			<keyword>TCL_ExistVar</keyword>
+			<keyword>TCL_GetVar</keyword>
+			<keyword>TCL_GetVersion</keyword>
+			<keyword>TCL_SetVar</keyword>
+			<keyword>TCL_UnsetVar</keyword>
+			<keyword>TCL_UpVar</keyword>
+			<keyword>editor</keyword>
+			<keyword>browsevar</keyword>
+			<keyword>editvar</keyword>
+			<keyword>parallel_concurrency</keyword>
+			<keyword>parallel_run</keyword>
+			<keyword>pvm_addhosts</keyword>
+			<keyword>pvm_barrier</keyword>
+			<keyword>pvm_bcast</keyword>
+			<keyword>pvm_bufinfo</keyword>
+			<keyword>pvm_config</keyword>
+			<keyword>pvm_delhosts</keyword>
+			<keyword>pvm_error</keyword>
+			<keyword>pvm_exit</keyword>
+			<keyword>pvm_f772sci</keyword>
+			<keyword>pvm_get_timer</keyword>
+			<keyword>pvm_getinst</keyword>
+			<keyword>pvm_gettid</keyword>
+			<keyword>pvm_gsize</keyword>
+			<keyword>pvm_halt</keyword>
+			<keyword>pvm_joingroup</keyword>
+			<keyword>pvm_kill</keyword>
+			<keyword>pvm_lvgroup</keyword>
+			<keyword>pvm_mytid</keyword>
+			<keyword>pvm_parent</keyword>
+			<keyword>pvm_probe</keyword>
+			<keyword>pvm_recv</keyword>
+			<keyword>pvm_reduce</keyword>
+			<keyword>pvm_sci2f77</keyword>
+			<keyword>pvm_send</keyword>
+			<keyword>pvm_set_timer</keyword>
+			<keyword>pvm_spawn</keyword>
+			<keyword>pvm_spawn_independent</keyword>
+			<keyword>pvm_start</keyword>
+			<keyword>pvm_tasks</keyword>
+			<keyword>pvm_tidtohost</keyword>
+			<keyword>dgettext</keyword>
+			<keyword>getdefaultlanguage</keyword>
+			<keyword>getlanguage</keyword>
+			<keyword>gettext</keyword>
+			<keyword>setdefaultlanguage</keyword>
+			<keyword>setlanguage</keyword>
+			<keyword>javaclasspath</keyword>
+			<keyword>javalibrarypath</keyword>
+			<keyword>system_getproperty</keyword>
+			<keyword>system_setproperty</keyword>
+			<keyword>with_embedded_jre</keyword>
+			<keyword>fromc</keyword>
+			<keyword>fromjava</keyword>
+		</context>
+
+		<context id="macros" style-ref="macro">
+			<prefix>(?&lt;![\w%\.])</prefix>
+			<keyword>readxls</keyword>
+			<keyword>read_csv</keyword>
+			<keyword>write_csv</keyword>
+			<keyword>selection_ga_elitist</keyword>
+			<keyword>optim_nsga2</keyword>
+			<keyword>init_ga_default</keyword>
+			<keyword>mutation_ga_default</keyword>
+			<keyword>crossover_ga_default</keyword>
+			<keyword>coding_ga_identity</keyword>
+			<keyword>pareto_filter</keyword>
+			<keyword>optim_ga</keyword>
+			<keyword>optim_nsga</keyword>
+			<keyword>optim_moga</keyword>
+			<keyword>selection_ga_random</keyword>
+			<keyword>convert_to_float</keyword>
+			<keyword>mutation_ga_binary</keyword>
+			<keyword>coding_ga_binary</keyword>
+			<keyword>crossover_ga_binary</keyword>
+			<keyword>nfreq</keyword>
+			<keyword>center</keyword>
+			<keyword>pca</keyword>
+			<keyword>cmoment</keyword>
+			<keyword>samwr</keyword>
+			<keyword>perctl</keyword>
+			<keyword>nansum</keyword>
+			<keyword>mvcorrel</keyword>
+			<keyword>covar</keyword>
+			<keyword>nanmax</keyword>
+			<keyword>ftuneq</keyword>
+			<keyword>msd</keyword>
+			<keyword>sample</keyword>
+			<keyword>ftest</keyword>
+			<keyword>harmean</keyword>
+			<keyword>nanmean</keyword>
+			<keyword>thrownan</keyword>
+			<keyword>nanmeanf</keyword>
+			<keyword>strange</keyword>
+			<keyword>nanmin</keyword>
+			<keyword>moment</keyword>
+			<keyword>trimmean</keyword>
+			<keyword>st_deviation</keyword>
+			<keyword>geomean</keyword>
+			<keyword>nand2mean</keyword>
+			<keyword>stdev</keyword>
+			<keyword>tabul</keyword>
+			<keyword>princomp</keyword>
+			<keyword>iqr</keyword>
+			<keyword>variancef</keyword>
+			<keyword>wcenter</keyword>
+			<keyword>nanstdev</keyword>
+			<keyword>mvvacov</keyword>
+			<keyword>nancumsum</keyword>
+			<keyword>quart</keyword>
+			<keyword>mad</keyword>
+			<keyword>regress</keyword>
+			<keyword>median</keyword>
+			<keyword>stdevf</keyword>
+			<keyword>correl</keyword>
+			<keyword>variance</keyword>
+			<keyword>samplef</keyword>
+			<keyword>show_pca</keyword>
+			<keyword>mean</keyword>
+			<keyword>meanf</keyword>
+			<keyword>nanmedian</keyword>
+			<keyword>mu2lin</keyword>
+			<keyword>wavwrite</keyword>
+			<keyword>sound</keyword>
+			<keyword>auwrite</keyword>
+			<keyword>analyze</keyword>
+			<keyword>wavread</keyword>
+			<keyword>soundsec</keyword>
+			<keyword>auread</keyword>
+			<keyword>savewave</keyword>
+			<keyword>mapsound</keyword>
+			<keyword>lin2mu</keyword>
+			<keyword>playsnd</keyword>
+			<keyword>loadwave</keyword>
+			<keyword>etime</keyword>
+			<keyword>datenum</keyword>
+			<keyword>now</keyword>
+			<keyword>toc</keyword>
+			<keyword>date</keyword>
+			<keyword>isLeapYear</keyword>
+			<keyword>clock</keyword>
+			<keyword>eomday</keyword>
+			<keyword>calendar</keyword>
+			<keyword>datevec</keyword>
+			<keyword>weekday</keyword>
+			<keyword>tic</keyword>
+			<keyword>translatepaths</keyword>
+			<keyword>m2sci_gui</keyword>
+			<keyword>matfile2sci</keyword>
+			<keyword>mfile2sci</keyword>
+			<keyword>cb_m2sci_gui</keyword>
+			<keyword>gcare</keyword>
+			<keyword>sm2ss</keyword>
+			<keyword>trisolve</keyword>
+			<keyword>syssize</keyword>
+			<keyword>leqe</keyword>
+			<keyword>projsl</keyword>
+			<keyword>arma2p</keyword>
+			<keyword>armax</keyword>
+			<keyword>tf2ss</keyword>
+			<keyword>kpure</keyword>
+			<keyword>hankelsv</keyword>
+			<keyword>ssrand</keyword>
+			<keyword>fourplan</keyword>
+			<keyword>gainplot</keyword>
+			<keyword>freson</keyword>
+			<keyword>ss2des</keyword>
+			<keyword>armax1</keyword>
+			<keyword>h_norm</keyword>
+			<keyword>macglov</keyword>
+			<keyword>calfrq</keyword>
+			<keyword>sensi</keyword>
+			<keyword>unobs</keyword>
+			<keyword>bloc2exp</keyword>
+			<keyword>p_margin</keyword>
+			<keyword>arsimul</keyword>
+			<keyword>dcf</keyword>
+			<keyword>parrot</keyword>
+			<keyword>nyquistfrequencybounds</keyword>
+			<keyword>invsyslin</keyword>
+			<keyword>obsvss</keyword>
+			<keyword>phasemag</keyword>
+			<keyword>bstap</keyword>
+			<keyword>evans</keyword>
+			<keyword>fspec</keyword>
+			<keyword>specfact</keyword>
+			<keyword>solve</keyword>
+			<keyword>gfare</keyword>
+			<keyword>abinv</keyword>
+			<keyword>rowinout</keyword>
+			<keyword>trzeros</keyword>
+			<keyword>cont_frm</keyword>
+			<keyword>nehari</keyword>
+			<keyword>h2norm</keyword>
+			<keyword>inistate</keyword>
+			<keyword>dscr</keyword>
+			<keyword>dhnorm</keyword>
+			<keyword>cont_mat</keyword>
+			<keyword>prbs_a</keyword>
+			<keyword>reglin</keyword>
+			<keyword>ss2tf</keyword>
+			<keyword>dbphi</keyword>
+			<keyword>abcd</keyword>
+			<keyword>copfac</keyword>
+			<keyword>sysdiag</keyword>
+			<keyword>frep2tf</keyword>
+			<keyword>armac</keyword>
+			<keyword>minss</keyword>
+			<keyword>csim</keyword>
+			<keyword>trianfml</keyword>
+			<keyword>zgrid</keyword>
+			<keyword>arl2</keyword>
+			<keyword>h_inf_st</keyword>
+			<keyword>findABCD</keyword>
+			<keyword>findAC</keyword>
+			<keyword>sylv</keyword>
+			<keyword>obs_gram</keyword>
+			<keyword>ccontrg</keyword>
+			<keyword>riccati</keyword>
+			<keyword>lqg2stan</keyword>
+			<keyword>dt_ility</keyword>
+			<keyword>ddp</keyword>
+			<keyword>equil</keyword>
+			<keyword>h_inf</keyword>
+			<keyword>syslin</keyword>
+			<keyword>lin</keyword>
+			<keyword>zeropen</keyword>
+			<keyword>linf</keyword>
+			<keyword>lqr</keyword>
+			<keyword>lyap</keyword>
+			<keyword>stabil</keyword>
+			<keyword>smga</keyword>
+			<keyword>lqg</keyword>
+			<keyword>epred</keyword>
+			<keyword>lft</keyword>
+			<keyword>minreal</keyword>
+			<keyword>findR</keyword>
+			<keyword>obscont</keyword>
+			<keyword>markp2ss</keyword>
+			<keyword>ss2ss</keyword>
+			<keyword>time_id</keyword>
+			<keyword>equil1</keyword>
+			<keyword>findx0BD</keyword>
+			<keyword>invrs</keyword>
+			<keyword>nyquist</keyword>
+			<keyword>nicholschart</keyword>
+			<keyword>lqg_ltr</keyword>
+			<keyword>svplot</keyword>
+			<keyword>canon</keyword>
+			<keyword>lqe</keyword>
+			<keyword>sgrid</keyword>
+			<keyword>sysfact</keyword>
+			<keyword>krac2</keyword>
+			<keyword>repfreq</keyword>
+			<keyword>fstabst</keyword>
+			<keyword>gtild</keyword>
+			<keyword>gamitg</keyword>
+			<keyword>lcf</keyword>
+			<keyword>ric_desc</keyword>
+			<keyword>arhnk</keyword>
+			<keyword>acf</keyword>
+			<keyword>dsimul</keyword>
+			<keyword>g_margin</keyword>
+			<keyword>imrep2ss</keyword>
+			<keyword>narsimul</keyword>
+			<keyword>sm2des</keyword>
+			<keyword>colinout</keyword>
+			<keyword>bilin</keyword>
+			<keyword>colregul</keyword>
+			<keyword>cainv</keyword>
+			<keyword>obsv_mat</keyword>
+			<keyword>black</keyword>
+			<keyword>dtsi</keyword>
+			<keyword>st_ility</keyword>
+			<keyword>trfmod</keyword>
+			<keyword>linfn</keyword>
+			<keyword>noisegen</keyword>
+			<keyword>balreal</keyword>
+			<keyword>flts</keyword>
+			<keyword>observer</keyword>
+			<keyword>fspecg</keyword>
+			<keyword>sysconv</keyword>
+			<keyword>entropy</keyword>
+			<keyword>pfss</keyword>
+			<keyword>bode</keyword>
+			<keyword>hallchart</keyword>
+			<keyword>des2ss</keyword>
+			<keyword>findBDK</keyword>
+			<keyword>h_cl</keyword>
+			<keyword>tf2des</keyword>
+			<keyword>leqr</keyword>
+			<keyword>chart</keyword>
+			<keyword>statgain</keyword>
+			<keyword>cls2dls</keyword>
+			<keyword>show_margins</keyword>
+			<keyword>ctr_gram</keyword>
+			<keyword>gfrancis</keyword>
+			<keyword>rowregul</keyword>
+			<keyword>sdiff</keyword>
+			<keyword>m_circle</keyword>
+			<keyword>des2tf</keyword>
+			<keyword>augment</keyword>
+			<keyword>ui_observer</keyword>
+			<keyword>bloc2ss</keyword>
+			<keyword>routh_t</keyword>
+			<keyword>plzr</keyword>
+			<keyword>contrss</keyword>
+			<keyword>cfspec</keyword>
+			<keyword>texout</keyword>
+			<keyword>plotout</keyword>
+			<keyword>addmenus</keyword>
+			<keyword>temp_law_csa</keyword>
+			<keyword>neigh_func_vfsa</keyword>
+			<keyword>temp_law_huang</keyword>
+			<keyword>temp_law_default</keyword>
+			<keyword>accept_func_default</keyword>
+			<keyword>neigh_func_default</keyword>
+			<keyword>temp_law_fsa</keyword>
+			<keyword>neigh_func_csa</keyword>
+			<keyword>temp_law_vfsa</keyword>
+			<keyword>optim_sa</keyword>
+			<keyword>accept_func_vfsa</keyword>
+			<keyword>neigh_func_fsa</keyword>
+			<keyword>compute_initial_temp</keyword>
+			<keyword>edit_error</keyword>
+			<keyword>getvalue</keyword>
+			<keyword>x_matrix</keyword>
+			<keyword>figure</keyword>
+			<keyword>menubar</keyword>
+			<keyword>addmenu</keyword>
+			<keyword>x_choices</keyword>
+			<keyword>findobj</keyword>
+			<keyword>clipboard</keyword>
+			<keyword>close</keyword>
+			<keyword>createpopup</keyword>
+			<keyword>with_texmacs</keyword>
+			<keyword>getshell</keyword>
+			<keyword>with_atlas</keyword>
+			<keyword>with_macros_source</keyword>
+			<keyword>perl</keyword>
+			<keyword>check_versions</keyword>
+			<keyword>add_demo</keyword>
+			<keyword>with_tk</keyword>
+			<keyword>OS_Version</keyword>
+			<keyword>with_javasci</keyword>
+			<keyword>check_modules_xml</keyword>
+			<keyword>with_pvm</keyword>
+			<keyword>ver</keyword>
+			<keyword>whereami</keyword>
+			<keyword>typeof</keyword>
+			<keyword>edit</keyword>
+			<keyword>who_user</keyword>
+			<keyword>toolboxes</keyword>
+			<keyword>whos</keyword>
+			<keyword>dirname</keyword>
+			<keyword>mdelete</keyword>
+			<keyword>ls</keyword>
+			<keyword>fullfile</keyword>
+			<keyword>listfiles</keyword>
+			<keyword>dispfiles</keyword>
+			<keyword>mkdir</keyword>
+			<keyword>listvarinfile</keyword>
+			<keyword>sscanf</keyword>
+			<keyword>fscanf</keyword>
+			<keyword>is_absolute_path</keyword>
+			<keyword>dir</keyword>
+			<keyword>rmdir</keyword>
+			<keyword>fprintf</keyword>
+			<keyword>scanf</keyword>
+			<keyword>get_file_path</keyword>
+			<keyword>tbx_builder_macros</keyword>
+			<keyword>tbx_builder_help_lang</keyword>
+			<keyword>tbx_build_cleaner</keyword>
+			<keyword>tbx_build_loader</keyword>
+			<keyword>tbx_build_help</keyword>
+			<keyword>tbx_builder_src_lang</keyword>
+			<keyword>tbx_build_blocks</keyword>
+			<keyword>tbx_builder</keyword>
+			<keyword>tbx_builder_help</keyword>
+			<keyword>tbx_builder_gateway_lang</keyword>
+			<keyword>tbx_build_gateway</keyword>
+			<keyword>tbx_build_help_loader</keyword>
+			<keyword>tbx_build_macros</keyword>
+			<keyword>tbx_builder_gateway</keyword>
+			<keyword>tbx_builder_src</keyword>
+			<keyword>tbx_build_gateway_clean</keyword>
+			<keyword>tbx_build_gateway_loader</keyword>
+			<keyword>tbx_build_src</keyword>
+			<keyword>horner</keyword>
+			<keyword>lcm</keyword>
+			<keyword>pdiv</keyword>
+			<keyword>denom</keyword>
+			<keyword>factors</keyword>
+			<keyword>polfact</keyword>
+			<keyword>pfactors</keyword>
+			<keyword>rowcompr</keyword>
+			<keyword>determ</keyword>
+			<keyword>lcmdiag</keyword>
+			<keyword>cmndred</keyword>
+			<keyword>gcd</keyword>
+			<keyword>hrmt</keyword>
+			<keyword>htrianr</keyword>
+			<keyword>coffg</keyword>
+			<keyword>sylm</keyword>
+			<keyword>pol2str</keyword>
+			<keyword>detr</keyword>
+			<keyword>derivat</keyword>
+			<keyword>diophant</keyword>
+			<keyword>colcompr</keyword>
+			<keyword>hermit</keyword>
+			<keyword>pol2des</keyword>
+			<keyword>invr</keyword>
+			<keyword>numer</keyword>
+			<keyword>systmat</keyword>
+			<keyword>inv_coeff</keyword>
+			<keyword>WritemiMatrix</keyword>
+			<keyword>savematfile</keyword>
+			<keyword>loadmatfile</keyword>
+			<keyword>ReadmiMatrix</keyword>
+			<keyword>check_help</keyword>
+			<keyword>xmltoformat</keyword>
+			<keyword>add_module_help_chapter</keyword>
+			<keyword>xmltoweb</keyword>
+			<keyword>help_skeleton</keyword>
+			<keyword>extract_help_examples</keyword>
+			<keyword>xmltops</keyword>
+			<keyword>xmltochm</keyword>
+			<keyword>del_help_chapter</keyword>
+			<keyword>help</keyword>
+			<keyword>apropos</keyword>
+			<keyword>add_help_chapter</keyword>
+			<keyword>del_module_help_chapter</keyword>
+			<keyword>xmltopdf</keyword>
+			<keyword>clean_help</keyword>
+			<keyword>find_links</keyword>
+			<keyword>help_from_sci</keyword>
+			<keyword>xmltojar</keyword>
+			<keyword>xmltohtml</keyword>
+			<keyword>xmlfiletohtml</keyword>
+			<keyword>manedit</keyword>
+			<keyword>generic_i_hm</keyword>
+			<keyword>generic_i_st</keyword>
+			<keyword>generic_i_s</keyword>
+			<keyword>generic_i_h</keyword>
+			<keyword>generic_i_ce</keyword>
+			<keyword>createstruct</keyword>
+			<keyword>st_i_generic</keyword>
+			<keyword>interp1</keyword>
+			<keyword>smooth</keyword>
+			<keyword>interpln</keyword>
+			<keyword>mtlb_format</keyword>
+			<keyword>mtlb_cumsum</keyword>
+			<keyword>mtlb_logic</keyword>
+			<keyword>mtlb_rcond</keyword>
+			<keyword>mtlb_more</keyword>
+			<keyword>mtlb_cond</keyword>
+			<keyword>mtlb_findstr</keyword>
+			<keyword>mtlb_filter</keyword>
+			<keyword>mtlb_int16</keyword>
+			<keyword>mtlb_tril</keyword>
+			<keyword>mtlb_sum</keyword>
+			<keyword>mtlb</keyword>
+			<keyword>mtlb_false</keyword>
+			<keyword>mtlb_plot</keyword>
+			<keyword>mtlb_strrep</keyword>
+			<keyword>mtlb_choices</keyword>
+			<keyword>mtlb_isletter</keyword>
+			<keyword>mtlb_is</keyword>
+			<keyword>mtlb_subplot</keyword>
+			<keyword>mtlb_cumprod</keyword>
+			<keyword>mtlb_0</keyword>
+			<keyword>mtlb_box</keyword>
+			<keyword>mtlb_error</keyword>
+			<keyword>mtlb_fprintf</keyword>
+			<keyword>mtlb_image</keyword>
+			<keyword>mtlb_min</keyword>
+			<keyword>mtlb_true</keyword>
+			<keyword>mtlb_s</keyword>
+			<keyword>mtlb_pcolor</keyword>
+			<keyword>mtlb_close</keyword>
+			<keyword>mtlb_mesh</keyword>
+			<keyword>mtlb_realmin</keyword>
+			<keyword>mtlb_isfield</keyword>
+			<keyword>mtlb_sortrows</keyword>
+			<keyword>mtlb_axis</keyword>
+			<keyword>mtlb_strcmp</keyword>
+			<keyword>mtlb_fscanf</keyword>
+			<keyword>mtlb_i</keyword>
+			<keyword>mtlb_cov</keyword>
+			<keyword>mtlb_meshdom</keyword>
+			<keyword>mtlb_eye</keyword>
+			<keyword>mtlb_imp</keyword>
+			<keyword>asciimat</keyword>
+			<keyword>mtlb_realmax</keyword>
+			<keyword>mtlb_a</keyword>
+			<keyword>mtlb_qr</keyword>
+			<keyword>mtlb_echo</keyword>
+			<keyword>mtlb_logical</keyword>
+			<keyword>mtlb_isa</keyword>
+			<keyword>mtlb_fread</keyword>
+			<keyword>mtlb_var</keyword>
+			<keyword>mtlb_full</keyword>
+			<keyword>mtlb_uint8</keyword>
+			<keyword>fseek_origin</keyword>
+			<keyword>mtlb_qz</keyword>
+			<keyword>mtlb_median</keyword>
+			<keyword>mtlb_semilogx</keyword>
+			<keyword>mtlb_diff</keyword>
+			<keyword>mstr2sci</keyword>
+			<keyword>mtlb_sort</keyword>
+			<keyword>mtlb_any</keyword>
+			<keyword>mtlb_strcmpi</keyword>
+			<keyword>mtlb_size</keyword>
+			<keyword>mtlb_mean</keyword>
+			<keyword>mtlb_l</keyword>
+			<keyword>mtlb_std</keyword>
+			<keyword>mtlb_zeros</keyword>
+			<keyword>mtlb_sprintf</keyword>
+			<keyword>mtlb_fft</keyword>
+			<keyword>mtlb_int8</keyword>
+			<keyword>sci_sparse</keyword>
+			<keyword>mtlb_ifft</keyword>
+			<keyword>mtlb_get</keyword>
+			<keyword>mtlb_eval</keyword>
+			<keyword>mtlb_exist</keyword>
+			<keyword>mtlb_axes</keyword>
+			<keyword>firstnonsingleton</keyword>
+			<keyword>char</keyword>
+			<keyword>mtlb_strfind</keyword>
+			<keyword>mtlb_isspace</keyword>
+			<keyword>mtlb_loglog</keyword>
+			<keyword>mtlb_upper</keyword>
+			<keyword>mtlb_repmat</keyword>
+			<keyword>mtlb_linspace</keyword>
+			<keyword>mtlb_all</keyword>
+			<keyword>mtlb_colordef</keyword>
+			<keyword>mtlb_dec2hex</keyword>
+			<keyword>mtlb_beta</keyword>
+			<keyword>mtlb_conv</keyword>
+			<keyword>mtlb_semilogy</keyword>
+			<keyword>mtlb_toeplitz</keyword>
+			<keyword>mtlb_type</keyword>
+			<keyword>mtlb_fwrite</keyword>
+			<keyword>mtlb_uint16</keyword>
+			<keyword>mtlb_sscanf</keyword>
+			<keyword>mtlb_double</keyword>
+			<keyword>mtlb_randn</keyword>
+			<keyword>mtlb_uint32</keyword>
+			<keyword>mtlb_e</keyword>
+			<keyword>mtlb_hold</keyword>
+			<keyword>mtlb_prod</keyword>
+			<keyword>mtlb_fftshift</keyword>
+			<keyword>enlarge_shape</keyword>
+			<keyword>mtlb_rand</keyword>
+			<keyword>makecell</keyword>
+			<keyword>mtlb_t</keyword>
+			<keyword>mtlb_diag</keyword>
+			<keyword>mtlb_lower</keyword>
+			<keyword>mtlb_num2str</keyword>
+			<keyword>mtlb_dir</keyword>
+			<keyword>mtlb_fopen</keyword>
+			<keyword>mtlb_setstr</keyword>
+			<keyword>mtlb_max</keyword>
+			<keyword>mtlb_int32</keyword>
+			<keyword>mtlb_delete</keyword>
+			<keyword>mtlb_grid</keyword>
+			<keyword>mtlb_find</keyword>
+			<keyword>mtlb_fliplr</keyword>
+			<keyword>mtlb_triu</keyword>
+			<keyword>mtlb_legendre</keyword>
+			<keyword>mtlb_ones</keyword>
+			<keyword>powershell</keyword>
+			<keyword>check_classpath</keyword>
+			<keyword>check_librarypath</keyword>
+			<keyword>jre_path</keyword>
+			<keyword>unix_w</keyword>
+			<keyword>input</keyword>
+			<keyword>unix_g</keyword>
+			<keyword>unix_s</keyword>
+			<keyword>halt</keyword>
+			<keyword>getscilabkeywords</keyword>
+			<keyword>unix_x</keyword>
+			<keyword>erfinv</keyword>
+			<keyword>iscellstr</keyword>
+			<keyword>fieldnames</keyword>
+			<keyword>isfield</keyword>
+			<keyword>struct</keyword>
+			<keyword>cell</keyword>
+			<keyword>hypermat</keyword>
+			<keyword>isstruct</keyword>
+			<keyword>iscell</keyword>
+			<keyword>dae</keyword>
+			<keyword>intc</keyword>
+			<keyword>integrate</keyword>
+			<keyword>odeoptions</keyword>
+			<keyword>intl</keyword>
+			<keyword>daeoptions</keyword>
+			<keyword>velodp</keyword>
+			<keyword>velod</keyword>
+			<keyword>velo2</keyword>
+			<keyword>bike_show</keyword>
+			<keyword>velo1</keyword>
+			<keyword>gschur</keyword>
+			<keyword>spaninter</keyword>
+			<keyword>quaskro</keyword>
+			<keyword>kroneck</keyword>
+			<keyword>trace</keyword>
+			<keyword>pen2ea</keyword>
+			<keyword>companion</keyword>
+			<keyword>im_inv</keyword>
+			<keyword>pbig</keyword>
+			<keyword>pencan</keyword>
+			<keyword>genmarkov</keyword>
+			<keyword>sva</keyword>
+			<keyword>range</keyword>
+			<keyword>classmarkov</keyword>
+			<keyword>proj</keyword>
+			<keyword>polar</keyword>
+			<keyword>glever</keyword>
+			<keyword>aff2ab</keyword>
+			<keyword>cond</keyword>
+			<keyword>squeeze</keyword>
+			<keyword>kernel</keyword>
+			<keyword>colcomp</keyword>
+			<keyword>pinv</keyword>
+			<keyword>penlaur</keyword>
+			<keyword>eigenmarkov</keyword>
+			<keyword>rowshuff</keyword>
+			<keyword>fullrfk</keyword>
+			<keyword>psmall</keyword>
+			<keyword>fullrf</keyword>
+			<keyword>sqroot</keyword>
+			<keyword>gspec</keyword>
+			<keyword>nlev</keyword>
+			<keyword>rowcomp</keyword>
+			<keyword>chfact</keyword>
+			<keyword>coff</keyword>
+			<keyword>givens</keyword>
+			<keyword>chsolve</keyword>
+			<keyword>spanplus</keyword>
+			<keyword>diff</keyword>
+			<keyword>randpencil</keyword>
+			<keyword>norm</keyword>
+			<keyword>spantwo</keyword>
+			<keyword>rref</keyword>
+			<keyword>cmb_lin</keyword>
+			<keyword>linsolve</keyword>
+			<keyword>orth</keyword>
+			<keyword>projspec</keyword>
+			<keyword>householder</keyword>
+			<keyword>rank</keyword>
+			<keyword>convol</keyword>
+			<keyword>lattn</keyword>
+			<keyword>dft</keyword>
+			<keyword>srfaur</keyword>
+			<keyword>cepstrum</keyword>
+			<keyword>iir</keyword>
+			<keyword>eqiir</keyword>
+			<keyword>yulewalk</keyword>
+			<keyword>faurre</keyword>
+			<keyword>iirlp</keyword>
+			<keyword>cspect</keyword>
+			<keyword>ffilt</keyword>
+			<keyword>trans</keyword>
+			<keyword>fftshift</keyword>
+			<keyword>ifft</keyword>
+			<keyword>eqfir</keyword>
+			<keyword>pspect</keyword>
+			<keyword>wfir</keyword>
+			<keyword>chepol</keyword>
+			<keyword>fft2</keyword>
+			<keyword>detrend</keyword>
+			<keyword>casc</keyword>
+			<keyword>wiener</keyword>
+			<keyword>hank</keyword>
+			<keyword>czt</keyword>
+			<keyword>mese</keyword>
+			<keyword>mrfit</keyword>
+			<keyword>group</keyword>
+			<keyword>buttmag</keyword>
+			<keyword>frfit</keyword>
+			<keyword>filter</keyword>
+			<keyword>hilb</keyword>
+			<keyword>ell1mag</keyword>
+			<keyword>phc</keyword>
+			<keyword>analpf</keyword>
+			<keyword>lev</keyword>
+			<keyword>zpbutt</keyword>
+			<keyword>iirmod</keyword>
+			<keyword>srkf</keyword>
+			<keyword>lindquist</keyword>
+			<keyword>intdec</keyword>
+			<keyword>jmat</keyword>
+			<keyword>frmag</keyword>
+			<keyword>system</keyword>
+			<keyword>bilt</keyword>
+			<keyword>hilbert</keyword>
+			<keyword>zpell</keyword>
+			<keyword>kalm</keyword>
+			<keyword>sskf</keyword>
+			<keyword>window</keyword>
+			<keyword>remezb</keyword>
+			<keyword>findm</keyword>
+			<keyword>iirgroup</keyword>
+			<keyword>levin</keyword>
+			<keyword>filt_sinc</keyword>
+			<keyword>sincd</keyword>
+			<keyword>wigner</keyword>
+			<keyword>mfft</keyword>
+			<keyword>cheb1mag</keyword>
+			<keyword>zpch2</keyword>
+			<keyword>find_freq</keyword>
+			<keyword>fsfirlin</keyword>
+			<keyword>zpch1</keyword>
+			<keyword>cheb2mag</keyword>
+			<keyword>karmarkar</keyword>
+			<keyword>aplat</keyword>
+			<keyword>pack</keyword>
+			<keyword>lmisolver</keyword>
+			<keyword>recons</keyword>
+			<keyword>leastsq</keyword>
+			<keyword>list2vec</keyword>
+			<keyword>fit_dat</keyword>
+			<keyword>datafit</keyword>
+			<keyword>pencost</keyword>
+			<keyword>NDcost</keyword>
+			<keyword>lmitool</keyword>
+			<keyword>bvodeS</keyword>
+			<keyword>derivative</keyword>
+			<keyword>qpsolve</keyword>
+			<keyword>unpack</keyword>
+			<keyword>vec2list</keyword>
+			<keyword>numdiff</keyword>
+			<keyword>genlib</keyword>
+			<keyword>bytecodewalk</keyword>
+			<keyword>add_profiling</keyword>
+			<keyword>profile</keyword>
+			<keyword>recompilefunction</keyword>
+			<keyword>remove_profiling</keyword>
+			<keyword>check_gateways</keyword>
+			<keyword>genlib_old</keyword>
+			<keyword>fun2string</keyword>
+			<keyword>bytecode</keyword>
+			<keyword>warnobsolete</keyword>
+			<keyword>listfunctions</keyword>
+			<keyword>head_comments</keyword>
+			<keyword>showprofile</keyword>
+			<keyword>createfun</keyword>
+			<keyword>plotprofile</keyword>
+			<keyword>macrovar</keyword>
+			<keyword>getd</keyword>
+			<keyword>reset_profiling</keyword>
+			<keyword>get_function_path</keyword>
+			<keyword>get_profile</keyword>
+			<keyword>demo_compiler</keyword>
+			<keyword>demo_gui</keyword>
+			<keyword>demo_folder_choice</keyword>
+			<keyword>demo_choose</keyword>
+			<keyword>demo_begin</keyword>
+			<keyword>demo_file_choice</keyword>
+			<keyword>demo_message</keyword>
+			<keyword>demo_run</keyword>
+			<keyword>demo_viewCode</keyword>
+			<keyword>demo_function_choice</keyword>
+			<keyword>demo_end</keyword>
+			<keyword>demo_mdialog</keyword>
+			<keyword>sci2map</keyword>
+			<keyword>colordef</keyword>
+			<keyword>ghdl2tree</keyword>
+			<keyword>sd2sci</keyword>
+			<keyword>isoview</keyword>
+			<keyword>xstringl</keyword>
+			<keyword>barhomogenize</keyword>
+			<keyword>fplot2d</keyword>
+			<keyword>scaling</keyword>
+			<keyword>barh</keyword>
+			<keyword>pinkcolormap</keyword>
+			<keyword>plot</keyword>
+			<keyword>jetcolormap</keyword>
+			<keyword>hsvcolormap</keyword>
+			<keyword>secto3d</keyword>
+			<keyword>autumncolormap</keyword>
+			<keyword>coolcolormap</keyword>
+			<keyword>xnumb</keyword>
+			<keyword>comet3d</keyword>
+			<keyword>getLineSpec</keyword>
+			<keyword>fcontour</keyword>
+			<keyword>locate</keyword>
+			<keyword>colorbar</keyword>
+			<keyword>get_figure_handle</keyword>
+			<keyword>fplot3d1</keyword>
+			<keyword>histplot</keyword>
+			<keyword>getlinestyle</keyword>
+			<keyword>edit_curv</keyword>
+			<keyword>fcontour2d</keyword>
+			<keyword>fgrayplot</keyword>
+			<keyword>sda</keyword>
+			<keyword>gda</keyword>
+			<keyword>bonecolormap</keyword>
+			<keyword>addcolor</keyword>
+			<keyword>eval3d</keyword>
+			<keyword>setSurfProperty</keyword>
+			<keyword>gdf</keyword>
+			<keyword>fplot3d</keyword>
+			<keyword>Sfgrayplot</keyword>
+			<keyword>bar</keyword>
+			<keyword>fac3d1</keyword>
+			<keyword>ResetFigureDDM</keyword>
+			<keyword>gr_menu</keyword>
+			<keyword>graycolormap</keyword>
+			<keyword>projaff</keyword>
+			<keyword>subplot</keyword>
+			<keyword>ghdl_fields</keyword>
+			<keyword>legend</keyword>
+			<keyword>ylabel</keyword>
+			<keyword>contour</keyword>
+			<keyword>dragrect</keyword>
+			<keyword>ged_insert</keyword>
+			<keyword>rainbowcolormap</keyword>
+			<keyword>scf</keyword>
+			<keyword>ged</keyword>
+			<keyword>twinkle</keyword>
+			<keyword>mesh</keyword>
+			<keyword>getColorIndex</keyword>
+			<keyword>Sgrayplot</keyword>
+			<keyword>legends</keyword>
+			<keyword>xinfo</keyword>
+			<keyword>eval3dp</keyword>
+			<keyword>xselect</keyword>
+			<keyword>rotate</keyword>
+			<keyword>title</keyword>
+			<keyword>graduate</keyword>
+			<keyword>TitleLabel</keyword>
+			<keyword>clf</keyword>
+			<keyword>hotcolormap</keyword>
+			<keyword>fchamp</keyword>
+			<keyword>wintercolormap</keyword>
+			<keyword>contourf</keyword>
+			<keyword>paramfplot2d</keyword>
+			<keyword>checkXYPair</keyword>
+			<keyword>pie</keyword>
+			<keyword>getcolor</keyword>
+			<keyword>getPlotPropertyName</keyword>
+			<keyword>xbasr</keyword>
+			<keyword>xrpoly</keyword>
+			<keyword>milk_drop</keyword>
+			<keyword>gca</keyword>
+			<keyword>genfac3d</keyword>
+			<keyword>graypolarplot</keyword>
+			<keyword>comet</keyword>
+			<keyword>errbar</keyword>
+			<keyword>xsetm</keyword>
+			<keyword>xload</keyword>
+			<keyword>rgb2name</keyword>
+			<keyword>getfont</keyword>
+			<keyword>square</keyword>
+			<keyword>hsv2rgb</keyword>
+			<keyword>hist3d</keyword>
+			<keyword>fac3d</keyword>
+			<keyword>titlepage</keyword>
+			<keyword>nf3d</keyword>
+			<keyword>plot3d2</keyword>
+			<keyword>getmark</keyword>
+			<keyword>plot3d3</keyword>
+			<keyword>whitecolormap</keyword>
+			<keyword>contour2d</keyword>
+			<keyword>check2dFun</keyword>
+			<keyword>sca</keyword>
+			<keyword>polarplot</keyword>
+			<keyword>gce</keyword>
+			<keyword>plotframe</keyword>
+			<keyword>getsymbol</keyword>
+			<keyword>name2rgb</keyword>
+			<keyword>gcf</keyword>
+			<keyword>surf</keyword>
+			<keyword>replot</keyword>
+			<keyword>xclear</keyword>
+			<keyword>xsave</keyword>
+			<keyword>setPlotProperty</keyword>
+			<keyword>getTitleLabelPropertyNam</keyword>
+			<keyword>sdf</keyword>
+			<keyword>springcolormap</keyword>
+			<keyword>color</keyword>
+			<keyword>oceancolormap</keyword>
+			<keyword>zlabel</keyword>
+			<keyword>setTitleLabelProperty</keyword>
+			<keyword>getSurfPropertyName</keyword>
+			<keyword>coppercolormap</keyword>
+			<keyword>summercolormap</keyword>
+			<keyword>xlabel</keyword>
+			<keyword>seteventhandler</keyword>
+			<keyword>oldplot</keyword>
+			<keyword>setDefaultColor</keyword>
+			<keyword>configure_pvm</keyword>
+			<keyword>test_run</keyword>
+			<keyword>scitest</keyword>
+			<keyword>nonreg_test_run</keyword>
+			<keyword>bench_run</keyword>
+			<keyword>devtools_run_builder</keyword>
+			<keyword>unit_test_run</keyword>
+			<keyword>testexamples</keyword>
+			<keyword>launchtest</keyword>
+			<keyword>test_clean</keyword>
+			<keyword>xs2fig</keyword>
+			<keyword>xend</keyword>
+			<keyword>xs2emf</keyword>
+			<keyword>xinit</keyword>
+			<keyword>driver</keyword>
+			<keyword>condestsp</keyword>
+			<keyword>PlotSparse</keyword>
+			<keyword>cond2sp</keyword>
+			<keyword>scisptdemo</keyword>
+			<keyword>rafiter</keyword>
+			<keyword>ReadHBSparse</keyword>
+			<keyword>ana_style</keyword>
+			<keyword>replace_Ix_by_Fx</keyword>
+			<keyword>test_on_columns</keyword>
+			<keyword>prettyprint</keyword>
+			<keyword>sprintf</keyword>
+			<keyword>printf</keyword>
+			<keyword>ssprint</keyword>
+			<keyword>spzeros</keyword>
+			<keyword>sprand</keyword>
+			<keyword>issparse</keyword>
+			<keyword>adj2sp</keyword>
+			<keyword>gmres</keyword>
+			<keyword>qmr</keyword>
+			<keyword>pcg</keyword>
+			<keyword>sp2adj</keyword>
+			<keyword>speye</keyword>
+			<keyword>errorDiagramPath</keyword>
+			<keyword>openDiagramPath</keyword>
+			<keyword>xcosPalExport</keyword>
+			<keyword>xcosBlockInterface</keyword>
+			<keyword>importScicosPal</keyword>
+			<keyword>xcos_simulate</keyword>
+			<keyword>xcosPalAdd</keyword>
+			<keyword>loadScicosLibs</keyword>
+			<keyword>xcos_open</keyword>
+			<keyword>xcosBlockEval</keyword>
+			<keyword>importScicosDiagram</keyword>
+			<keyword>xcosShowBlockWarning</keyword>
+			<keyword>getDiagramVersion</keyword>
+			<keyword>xcos_workspace_init</keyword>
+			<keyword>xcos_run</keyword>
+			<keyword>xcosConfigureModelica</keyword>
+			<keyword>generateBlockImage</keyword>
+			<keyword>xcosCodeGeneration</keyword>
+			<keyword>xcos_close</keyword>
+			<keyword>getModelicaPath</keyword>
+			<keyword>xcosPal</keyword>
+			<keyword>xcos_compile</keyword>
+			<keyword>loadXcosLibs</keyword>
+			<keyword>xcosPalAddBlock</keyword>
+			<keyword>importXcosDiagram</keyword>
+			<keyword>xcosClearBlockWarning</keyword>
+			<keyword>generateBlockImages</keyword>
+			<keyword>closeDiagramPath</keyword>
+			<keyword>sub2ind</keyword>
+			<keyword>bitand</keyword>
+			<keyword>acotd</keyword>
+			<keyword>cosd</keyword>
+			<keyword>cothm</keyword>
+			<keyword>bitget</keyword>
+			<keyword>sinhm</keyword>
+			<keyword>cellstr</keyword>
+			<keyword>GLoad</keyword>
+			<keyword>csgn</keyword>
+			<keyword>cosm</keyword>
+			<keyword>acoth</keyword>
+			<keyword>vectorfind</keyword>
+			<keyword>cat</keyword>
+			<keyword>atanm</keyword>
+			<keyword>dec2hex</keyword>
+			<keyword>sec</keyword>
+			<keyword>asecd</keyword>
+			<keyword>asinhm</keyword>
+			<keyword>tanhm</keyword>
+			<keyword>bitor</keyword>
+			<keyword>ndims</keyword>
+			<keyword>sqrtm</keyword>
+			<keyword>tanm</keyword>
+			<keyword>linspace</keyword>
+			<keyword>tand</keyword>
+			<keyword>ind2sub</keyword>
+			<keyword>coth</keyword>
+			<keyword>isinf</keyword>
+			<keyword>primes</keyword>
+			<keyword>fix</keyword>
+			<keyword>tanh</keyword>
+			<keyword>acoshm</keyword>
+			<keyword>erfc</keyword>
+			<keyword>asinh</keyword>
+			<keyword>resize_matrix</keyword>
+			<keyword>sech</keyword>
+			<keyword>IsAScalar</keyword>
+			<keyword>secd</keyword>
+			<keyword>erf</keyword>
+			<keyword>log10</keyword>
+			<keyword>toeplitz</keyword>
+			<keyword>ndgrid</keyword>
+			<keyword>atanhm</keyword>
+			<keyword>sind</keyword>
+			<keyword>base2dec</keyword>
+			<keyword>isempty</keyword>
+			<keyword>cell2mat</keyword>
+			<keyword>acosh</keyword>
+			<keyword>csc</keyword>
+			<keyword>acsc</keyword>
+			<keyword>sinc</keyword>
+			<keyword>isvector</keyword>
+			<keyword>binomial</keyword>
+			<keyword>sinh</keyword>
+			<keyword>convertindex</keyword>
+			<keyword>perms</keyword>
+			<keyword>num2cell</keyword>
+			<keyword>erfcx</keyword>
+			<keyword>bitset</keyword>
+			<keyword>nextpow2</keyword>
+			<keyword>dec2bin</keyword>
+			<keyword>flipdim</keyword>
+			<keyword>meshgrid</keyword>
+			<keyword>pmodulo</keyword>
+			<keyword>cotg</keyword>
+			<keyword>cotd</keyword>
+			<keyword>logm</keyword>
+			<keyword>hex2dec</keyword>
+			<keyword>bitcmp</keyword>
+			<keyword>sinm</keyword>
+			<keyword>union</keyword>
+			<keyword>lex_sort</keyword>
+			<keyword>signm</keyword>
+			<keyword>bin2dec</keyword>
+			<keyword>modulo</keyword>
+			<keyword>unique</keyword>
+			<keyword>setdiff</keyword>
+			<keyword>atand</keyword>
+			<keyword>squarewave</keyword>
+			<keyword>complex</keyword>
+			<keyword>acot</keyword>
+			<keyword>oct2dec</keyword>
+			<keyword>acosd</keyword>
+			<keyword>inttrap</keyword>
+			<keyword>acosm</keyword>
+			<keyword>csch</keyword>
+			<keyword>asec</keyword>
+			<keyword>acscd</keyword>
+			<keyword>pertrans</keyword>
+			<keyword>coshm</keyword>
+			<keyword>null</keyword>
+			<keyword>factor</keyword>
+			<keyword>cosh</keyword>
+			<keyword>permute</keyword>
+			<keyword>asinm</keyword>
+			<keyword>bitxor</keyword>
+			<keyword>log2</keyword>
+			<keyword>intsplin</keyword>
+			<keyword>factorial</keyword>
+			<keyword>dec2oct</keyword>
+			<keyword>logspace</keyword>
+			<keyword>atanh</keyword>
+			<keyword>asind</keyword>
+			<keyword>intersect</keyword>
+			<keyword>repmat</keyword>
+			<keyword>acsch</keyword>
+			<keyword>isnan</keyword>
+			<keyword>asech</keyword>
+			<keyword>cscd</keyword>
+			<keyword>set_param</keyword>
+			<keyword>is_param</keyword>
+			<keyword>add_param</keyword>
+			<keyword>get_param</keyword>
+			<keyword>init_param</keyword>
+			<keyword>list_param</keyword>
+			<keyword>remove_param</keyword>
+			<keyword>ilib_gen_Make</keyword>
+			<keyword>findmsvccompiler</keyword>
+			<keyword>ilib_include_flag</keyword>
+			<keyword>detectmsvc64tools</keyword>
+			<keyword>findmsifortcompiler</keyword>
+			<keyword>ilib_gen_cleaner</keyword>
+			<keyword>dllinfo</keyword>
+			<keyword>gencompilationflags_unix</keyword>
+			<keyword>ilib_gen_Make_unix</keyword>
+			<keyword>G_make</keyword>
+			<keyword>ilib_gen_loader</keyword>
+			<keyword>ilib_build</keyword>
+			<keyword>ilib_gen_gateway</keyword>
+			<keyword>ilib_for_link</keyword>
+			<keyword>configure_msifort</keyword>
+			<keyword>ilib_mex_build</keyword>
+			<keyword>configure_msvc</keyword>
+			<keyword>detectmsifort64tools</keyword>
+			<keyword>haveacompiler</keyword>
+			<keyword>ilib_compile</keyword>
+			<keyword>atomsTest</keyword>
+			<keyword>atomsShow</keyword>
+			<keyword>atomsCategoryList</keyword>
+			<keyword>atomsUpdate</keyword>
+			<keyword>atomsDepTreeShow</keyword>
+			<keyword>atomsGetLoaded</keyword>
+			<keyword>atomsAutoload</keyword>
+			<keyword>atomsRepositoryDel</keyword>
+			<keyword>atomsSystemUpdate</keyword>
+			<keyword>atomsList</keyword>
+			<keyword>atomsAutoloadList</keyword>
+			<keyword>atomsRemove</keyword>
+			<keyword>atomsGetLoadedPath</keyword>
+			<keyword>atomsRepositoryAdd</keyword>
+			<keyword>atomsIsLoaded</keyword>
+			<keyword>atomsInstall</keyword>
+			<keyword>atomsSetConfig</keyword>
+			<keyword>atomsIsInstalled</keyword>
+			<keyword>atomsAutoloadAdd</keyword>
+			<keyword>atomsSystemInit</keyword>
+			<keyword>atomsAutoloadDel</keyword>
+			<keyword>atomsSearch</keyword>
+			<keyword>atomsVersion</keyword>
+			<keyword>atomsLoad</keyword>
+			<keyword>atomsRepositoryList</keyword>
+			<keyword>atomsGetInstalled</keyword>
+			<keyword>blanks</keyword>
+			<keyword>tree2code</keyword>
+			<keyword>instruction2code</keyword>
+			<keyword>strcmpi</keyword>
+			<keyword>eval</keyword>
+			<keyword>justify</keyword>
+			<keyword>expression2code</keyword>
+			<keyword>evstr</keyword>
+			<keyword>cat_code</keyword>
+			<keyword>format_txt</keyword>
+			<keyword>arobasestring2strings</keyword>
+			<keyword>rhs2code</keyword>
+			<keyword>ascii2string</keyword>
+			<keyword>tokenpos</keyword>
+			<keyword>isnum</keyword>
+			<keyword>sci2exp</keyword>
+			<keyword>gettklib</keyword>
+			<keyword>sciGUI_init</keyword>
+			<keyword>config</keyword>
+			<keyword>winclose</keyword>
+			<keyword>TCL_CreateSlave</keyword>
+			<keyword>winlist</keyword>
+		</context>
+
+		<define-regex id="prefixed-macros" extended="true">
+			(?&lt;![\w%\.])(
+			%s_p_i |
+			%i_m_s |
+			%s_a_i |
+			%s_2_i |
+			%i_contour |
+			%s_q_i |
+			%i_o_s |
+			%s_r_i |
+			%s_x_i |
+			%i_string |
+			%s_n_i |
+			%s_1_i |
+			%i_champ |
+			%i_p_i |
+			%i_sign |
+			%i_a_s |
+			%s_d_i |
+			%s_4_i |
+			%i_msprintf |
+			%i_mprintf |
+			%i_4_s |
+			%i_q_s |
+			%i_contour2d |
+			%i_s_s |
+			%i_plot2d |
+			%i_d_s |
+			%s_j_i |
+			%i_fft |
+			%i_r_s |
+			%i_Matplot |
+			%i_l_s |
+			%i_champ1 |
+			%i_n_s |
+			%s_i_i |
+			%i_plot2d1 |
+			%i_j_i |
+			%i_plot2d2 |
+			%i_3_s |
+			%i_x_s |
+			%s_l_i |
+			%s_m_i |
+			%s_3_i |
+			%s_s_i |
+			%s_o_i |
+			%i_1_s |
+			%i_mfprintf |
+			%i_p_s |
+			%i_j_s |
+			%i_2_s |
+			%r_a_r |
+			%p_i_r |
+			%r_s_lss |
+			%s_f_cblock |
+			%c_ones |
+			%hm_rand |
+			%lss_i_st |
+			%p_i_lss |
+			%hm_d_hm |
+			%p_l_p |
+			%hm_p |
+			%sp_c_s |
+			%p_l_r |
+			%lss_l_r |
+			%i_bezout |
+			%hm_m_r |
+			%lss_l_s |
+			%c_a_c |
+			%c_i_lss |
+			%s_a_ip |
+			%s_e |
+			%r_o_s |
+			%lss_m_lss |
+			%p_v_lss |
+			%lss_l_lss |
+			%lss_s_lss |
+			%st_size |
+			%lss_r_s |
+			%hm_sign |
+			%hm_s_s |
+			%hm_h_hm |
+			%st_i_msp |
+			%sp_inv |
+			%hm_find |
+			%s_r_sp |
+			%st_i_r |
+			%ip_n_ip |
+			%s_s_sp |
+			%p_j_s |
+			%s_i_sp |
+			%r_z_p |
+			%hm_ones |
+			%xlssheet_size |
+			%s_l_s |
+			%p_sum
+			%s_1_hm |
+			%p_i_s |
+			%s_g_b |
+			%i_and |
+			%p_string |
+			%s_f_lss |
+			%lss_f_s |
+			%hm_imag |
+			%r_f_s |
+			%s_q_r |
+			%l_n_st |
+			%r_r_s |
+			%s_b_i |
+			%sp_diag |
+			%lss_i_p |
+			%lss_norm |
+			%i_d_i |
+			%st_o_p |
+			%c_f_s |
+			%sp_l_sp |
+			%s_d_r |
+			%p_n_l |
+			%st_n_p |
+			%lss_v_lss |
+			%st_o_c |
+			%r_tril |
+			%s_d_sp |
+			%hm_a_s |
+			%lss_m_s |
+			%hm_sum |
+			%hm_o_i |
+			%l_n_c |
+			%r_l_lss |
+			%cblock_p |
+			%sp_s_sp |
+			%hm_i_i |
+			%s_o_hm |
+			%lss_o_s |
+			%spb_i_h |
+			%r_diag |
+			%r_f_r |
+			%s_h_b |
+			%spb_and |
+			%hm_o_s |
+			%b_i_st |
+			%r_a_hm |
+			%hm_log |
+			%msp_i_s |
+			%c_o_l |
+			%r_m_r |
+			%c_o_st |
+			%sp_sin |
+			%s_i_s |
+			%c_i_hm |
+			%r_v_r |
+			%p_i_st |
+			%s_l_p |
+			%st_o_mc |
+			%r_prod |
+			%st_i_fptr |
+			%hm_j_s |
+			%p_m_lss |
+			%r_x_p |
+			%hm_f_hm |
+			%r_i_lss |
+			%lss_i_ce |
+			%c_b_s |
+			%hm_e |
+			%st_i_i |
+			%sp_cos |
+			%ip_s_s |
+			%xlssheet_e |
+			%i_b_s |
+			%s_x_r |
+			%lss_e |
+			%sp_d_s |
+			%hm_cumprod |
+			%b_tril |
+			%s_n_r |
+			%s_i_spb |
+			%s_s_lss |
+			%s_o_r |
+			%s_a_sp |
+			%b_i_h |
+			%hm_isnan |
+			%s_simp |
+			%r_r_lss |
+			%mc_o_st |
+			%grayplot_i_h |
+			%r_rand |
+			%hm_real |
+			%l_o_st |
+			%sp_k_s |
+			%c_i_c |
+			%r_r_r |
+			%sp_sqrt |
+			%s_q_p |
+			%p_l_lss |
+			%lss_l_p |
+			%r_l_s |
+			%hm_bool2s |
+			%i_h_i |
+			%b_i_hm |
+			%l_o_l |
+			%s_a_hm |
+			%s_matrix |
+			%p_r_p |
+			%p_r_s |
+			%r_inv |
+			%st_o_tl |
+			%hm_m_p |
+			%r_v_s |
+			%lss_m_p |
+			%ce_matrix |
+			%p_a_lss |
+			%st_p |
+			%spb_i_st |
+			%s_c_lss |
+			%hm_exp |
+			%xlssheet_string |
+			%hm_s |
+			%s_f_r |
+			%lss_i_r |
+			%lss_inv |
+			%ce_p |
+			%s_i_hm |
+			%ce_i_st |
+			%i_gcd |
+			%c_i_h |
+			%hm_a_r |
+			%r_p |
+			%s_q_hm |
+			%lss_c_p |
+			%lss_ones |
+			%p_d_s |
+			%lss_i_s |
+			%ip_a_s |
+			%r_clean |
+			%s_m_r |
+			%s_i_r |
+			%s_n_hm |
+			%lss_a_p |
+			%spb_g_b |
+			%r_m_p |
+			%st_i_b |
+			%xls_p |
+			%hm_conj |
+			%p_y_r |
+			%l_n_m |
+			%sp_norm |
+			%hm_i_hm |
+			%hm_sqrt |
+			%b_i_spb |
+			%sp_sum |
+			%r_ones |
+			%lss_i_lss |
+			%p_q_r |
+			%sp_k_sp |
+			%s_v_lss |
+			%r_s_hm |
+			%st_c_st |
+			%s_l_sp |
+			%msp_n_msp |
+			%i_i_st |
+			%s_5 |
+			%p_o_r |
+			%ce_i_s |
+			%p_y_p |
+			%lss_f_r |
+			%st_e |
+			%mc_n_st |
+			%r_i_ce |
+			%hm_iconvert |
+			%lss_r_p |
+			%s_o_lss |
+			%r_s |
+			%l_i_st |
+			%i_ascii |
+			%ce_i_ce |
+			%ce_6 |
+			%s_i_c |
+			%r_s_p |
+			%3d_i_h |
+			%r_q_s |
+			%hm_s_r |
+			%s_r_r |
+			%b_i_ce |
+			%p_k_r |
+			%p_k_s |
+			%i_s_i |
+			%r_d_s |
+			%lss_a_lss |
+			%spb_diag |
+			%sp_tril |
+			%s_o_l |
+			%s_a_lss |
+			%hm_i_r |
+			%st_n_l |
+			%st_n_c |
+			%st_n_mc |
+			%sp_y_s |
+			%s_r_s |
+			%c_n_st |
+			%r_s_r |
+			%i_i_hm |
+			%p_l_s |
+			%sp_l_s |
+			%r_k_r |
+			%s_i_h |
+			%p_n_r |
+			%r_n_lss |
+			%r_c_s |
+			%spb_h_b |
+			%s_x_hm |
+			%l_n_p |
+			%c_i_r |
+			%r_d_p |
+			%r_c_r |
+			%r_cumprod |
+			%r_d_r |
+			%lss_o_lss |
+			%p_inv |
+			%st_o_l |
+			%r_y_r |
+			%s_k_r |
+			%p_q_p |
+			%c_matrix |
+			%m_o_l |
+			%hm_2_hm |
+			%lss_m_r |
+			%p_c_lss |
+			%b_h_s |
+			%p_z_s |
+			%lss_v_p |
+			%r_eye |
+			%c_i_ce |
+			%s_n_l |
+			%hm_and |
+			%s_or |
+			%p_i_p |
+			%sp_or |
+			%b_i_s |
+			%fptr_i_st |
+			%r_k_s |
+			%b_h_spb |
+			%hm_i_b |
+			%r_det |
+			%hm_c_hm |
+			%sp_triu |
+			%s_f_sp |
+			%hm_mean |
+			%xls_e |
+			%spb_cumprod |
+			%mc_i_s |
+			%c_rand |
+			%s_k_hm |
+			%hm_cumsum |
+			%s_pow |
+			%st_i_spb |
+			%b_i_b |
+			%hm_i_st |
+			%msp_o_msp |
+			%lss_a_s |
+			%l_i_s |
+			%ce_c_ce |
+			%lss_eye |
+			%spb_tril |
+			%r_i_s |
+			%hm_round |
+			%sp_q_sp |
+			%sp_z_s |
+			%s_z_sp |
+			%p_m_r |
+			%i_i_i |
+			%r_l_r |
+			%hm_prod |
+			%i_lcm |
+			%hm_1_hm |
+			%dir_p |
+			%s_a_r |
+			%hm_r_s |
+			%ip_m_s |
+			%p_d_p |
+			%sp_cumprod |
+			%hm_x_hm |
+			%i_x_i |
+			%hm_k_s |
+			%sp_prod |
+			%spb_i_ce |
+			%p_k_p |
+			%sp_i_sp |
+			%spb_c_b |
+			%r_m_hm |
+			%p_x_r |
+			%s_d_p |
+			%hm_st_deviation |
+			%r_l_p |
+			%st_t |
+			%r_sum |
+			%lt_i_s |
+			%r_i_st |
+			%hm_size |
+			%s_m_lss |
+			%r_i_r |
+			%r_o_lss |
+			%p_e |
+			%spb_g_spb |
+			%sp_i_st |
+			%s_z_p |
+			%c_e |
+			%sp_a_s |
+			%p_v_s |
+			%spb_h_spb |
+			%p_r_r |
+			%hm_x_s |
+			%sp_z_sp |
+			%b_string |
+			%hm_2_s |
+			%hm_zeros |
+			%choose |
+			%sp_exp |
+			%r_n_r |
+			%s_k_sp |
+			%hm_3_hm |
+			%st_i_st |
+			%sp_and |
+			%sp_e |
+			%s_r_lss |
+			%p_det |
+			%s_i_p |
+			%p_i_hm |
+			%s_c_sp |
+			%l_o_c |
+			%st_i_h |
+			%s_y_sp |
+			%lss_a_r |
+			%r_a_p |
+			%p_s_lss |
+			%lss_n_s |
+			%s_3_hm |
+			%spb_f_b |
+			%lss_n_lss |
+			%hm_maxi |
+			%sp_r_sp |
+			%mc_i_st |
+			%c_i_s |
+			%spb_e |
+			%p_i_h |
+			%s_n_st |
+			%c_triu |
+			%st_string |
+			%spb_i_b |
+			%cblock_size |
+			%l_o_s |
+			%hm_floor |
+			%s_k_p |
+			%r_f_p |
+			%spb_cumsum |
+			%sp_int |
+			%r_c_lss |
+			%r_simp |
+			%hm_j_hm |
+			%r_z_s |
+			%lss_c_s |
+			%mc_i_h |
+			%i_a_i |
+			%c_tril |
+			%b_g_s |
+			%b_f_spb |
+			%r_f_lss |
+			%r_i_p |
+			%hm_isreal |
+			%i_m_i |
+			%p_c_r |
+			%hm_i_p |
+			%p_s_r |
+			%i_i_h |
+			%hm_s_hm |
+			%ce_f_ce |
+			%p_r_lss |
+			%st_i_p |
+			%spb_or |
+			%r_triu |
+			%lss_r_r |
+			%l_isequal |
+			%ip_string |
+			%sp_round |
+			%sp_a_sp |
+			%s_i_b |
+			%champdat_i_h |
+			%hm_ceil |
+			%s_v_s |
+			%s_l_r |
+			%s_2_hm |
+			%lss_o_r |
+			%p_z_p |
+			%p_o_lss |
+			%cblock_f_cblock |
+			%p_o_sp |
+			%r_x_s |
+			%b_c_spb |
+			%cblock_c_s |
+			%s_v_p |
+			%hm_o_hm |
+			%sp_f_s |
+			%hm_string |
+			%s_s_ip |
+			%p_q_s |
+			%st_6 |
+			%sp_q_s |
+			%p_cumsum |
+			%p_d_r |
+			%st_i_s |
+			%lss_size |
+			%r_x_r |
+			%sp_d_sp |
+			%lss_t |
+			%hm_a_hm |
+			%s_i_st |
+			%p_cumprod |
+			%r_y_s |
+			%lss_f_p |
+			%r_string |
+			%xlssheet_p |
+			%hm_x_p |
+			%p_matrix |
+			%s_y_p |
+			%s_s_hm |
+			%b_i_sp |
+			%0_i_st |
+			%hm_m_s |
+			%s_and |
+			%hm_cos |
+			%ip_i_st |
+			%p_v_p |
+			%p_y_s |
+			%s_4_hm |
+			%lss_r_lss |
+			%b_diag |
+			%sp_p_s |
+			%ce_t |
+			%st_i_sp |
+			%s_z_r |
+			%hm_i_s |
+			%s_i_ce |
+			%p_i_ce |
+			%hm_1_s |
+			%b_triu |
+			%r_v_lss |
+			%s_n_lss |
+			%sp_y_sp |
+			%p_a_r |
+			%st_i_lss |
+			%p_v_r |
+			%i_i_ce |
+			%i_length |
+			%i_i_s |
+			%sp_s_s |
+			%m_n_l |
+			%c_i_st |
+			%lss_v_r |
+			%r_q_r |
+			%hm_d_s |
+			%sp_i_s |
+			%r_a_s |
+			%hm_or |
+			%ip_o_ip |
+			%i_g_i |
+			%lss_v_s |
+			%r_j_s |
+			%ce_e |
+			%lss_n_p |
+			%c_b_c |
+			%p_o_l |
+			%r_n_s |
+			%p_prod |
+			%st_n_s |
+			%ip_p |
+			%sp_length |
+			%i_r_i |
+			%sp_r_s |
+			%r_o_r |
+			%sp_ceil |
+			%r_m_s |
+			%st_i_c |
+			%r_matrix |
+			%r_m_lss |
+			%r_c_p |
+			%st_f_st |
+			%s_s_r |
+			%r_p_s |
+			%hm_3_s |
+			%s_h_s |
+			%s_q_sp |
+			%hm_mini |
+			%r_i_hm |
+			%p_x_hm |
+			%r_e |
+			%st_o_s |
+			%s_b_s |
+			%hm_i_ce |
+			%r_s_s |
+			%l_o_m |
+			%hm_5 |
+			%i_round |
+			%s_v_r |
+			%msp_spones |
+			%hm_k_hm |
+			%s_c_r |
+			%lss_s_r |
+			%r_z_r |
+			%sp_floor |
+			%h_i_st |
+			%c_n_l |
+			%p_m_hm |
+			%s_l_hm |
+			%hm_fft |
+			%c_diag |
+			%l_n_s |
+			%b_g_spb |
+			%r_r_p |
+			%lss_o_p |
+			%sp_i_h |
+			%s_y_r |
+			%c_eye |
+			%p_n_lss |
+			%l_i_h |
+			%p_simp |
+			%r_t |
+			%s_l_lss |
+			%p_f_r |
+			%lss_rand |
+			%s_r_p |
+			%i_or |
+			%hm_sin |
+			%s_o_st |
+			%hm_4_s |
+			%l_o_p |
+			%b_e |
+			%hm_n_s |
+			%hm_4_hm |
+			%ar_p |
+			%cblock_e |
+			%i_e |
+			%lss_s |
+			%ce_string |
+			%p_p_s |
+			%s_c_cblock |
+			%spb_sum |
+			%lss_n_r |
+			%r_k_p |
+			%hm_g_hm |
+			%lss_s_p |
+			%ce_size |
+			%sp_i_ce |
+			%spb_triu |
+			%hm_q_hm |
+			%msp_p |
+			%ticks_i_h |
+			%s_m_hm |
+			%r_norm |
+			%lss_c_lss |
+			%r_size |
+			%lss_c_r |
+			%b_iconvert |
+			%hm_degree |
+			%hm_n_hm |
+			%r_a_lss |
+			%lss_f_lss |
+			%hm_abs |
+			%s_m_ip |
+			%b_matrix |
+			%st_matrix |
+			%r_n_p |
+			%msp_i_st |
+			%st_i_ip |
+			%p_z_r |
+			%r_y_p |
+			%l_n_l |
+			%hm_matrix |
+			%r_q_p |
+			%p_f_lss |
+			%sp_cumsum |
+			%lss_s_s |
+			%s_g_s |
+			%hm_int |
+			%spb_prod |
+			%r_o_p |
+			%s_i_lss |
+			%cblock_c_cblock |
+			%r_v_p |
+			%hm_median |
+			%s_s_b |
+			%b_c_s |
+			%b_a_s |
+			%b_f_s |
+			%b_prod |
+			%s_c_b |
+			%msp_abs |
+			%msp_e |
+			%b_s_s |
+			%b_x_s |
+			%s_f_b |
+			%b_m_s |
+			%msp_nnz |
+			%b_r_s |
+			%s_r_b |
+			%b_s_b |
+			%b_m_b |
+			%b_d_s |
+			%s_m_b |
+			%b_sum |
+			%s_x_b |
+			%s_m_msp |
+			%msp_t |
+			%msp_find |
+			%b_l_b |
+			%s_p_b |
+			%s_a_b |
+			%b_cumprod |
+			%s_a_msp |
+			%s_l_b |
+			%s_d_b |
+			%b_p_s |
+			%msp_sparse |
+			%b_x_b |
+			%msp_length |
+			%msp_m_s |
+			%b_l_s |
+			%msp_maxi |
+			%b_cumsum |
+			%msp_a_s |
+			%b_r_b |
+			%b_a_b |
+			%sn |
+			%asn |
+			%k |
+			%_champ |
+			%_plot3d |
+			%h_draw |
+			%_plot3d1 |
+			%_xset |
+			%_plot2d1 |
+			%_param3d |
+			%h_matrix |
+			%_fec |
+			%h_get |
+			%h_save |
+			%_plot2d3 |
+			%_Matplot |
+			%_Matplot1 |
+			%_xtitle |
+			%_plot2d4 |
+			%_param3d1 |
+			%_plot2d |
+			%h_e |
+			%_champ1 |
+			%h_load |
+			%_grayplot |
+			%h_p |
+			%_plot2d2 |
+			%h_set |
+			%h_copy |
+			%h_delete |
+			%_xstringb |
+			%_xget |
+			%diagram_xcos |
+			%sp_gsort |
+			%_gsort |
+			%_strsplit
+			)
+		</define-regex>
+
+    <context id="prefixed-macros" style-ref="macro">
+			<match>\%{prefixed-macros}</match>
+		</context> 
+
+    	<context id="scilab" class="no-spell-check">
+      	<include>
+					<context ref="boolean"/>
+					<context ref="number"/>
+					<context ref="operator"/>
+					<context ref="openclose"/>
+					<context ref="special-character"/>
+					<context ref="field"/>
+					<context ref="comment-note"/>
+					<context ref="line-comment"/>
+					<context ref="double-quoted-string"/>
+					<context ref="single-quoted-string"/>
+					
+					<context ref="floating-point-number"/>
+					<context ref="reserved-constants"/>
+					<context ref="controlkwd"/>
+					<context ref="structurekwd"/>
+					<context ref="functionkwd"/>
+<!--					<context ref="functionref"/> FIXME this doesn't work because PCRE regex in the lookbehind must be of fixed length -->
+					<context ref="primitives"/>
+					<context ref="macros"/>
+					<context ref="prefixed-macros"/>
+      	</include>
+    	</context>
+  </definitions>
+</language>
