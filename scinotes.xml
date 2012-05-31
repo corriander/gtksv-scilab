@@ -20,12 +20,12 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 -->
-
 <style-scheme id="scinotes" _name="SciNotes" version="1.0">
   <author>Alex Corrie</author>
   <_description>Port of the SciNotes (Scilab 5.3.3) schema</_description>
 
 <!-- Colour Palette -->
+
 	<color name="christi"								value="#01A801"/>
 	<color name="pale_green_approx"			value="#90F790"/>
 	<color name="blue"									value="#0000FF"/>
@@ -46,67 +46,94 @@
 	<color name="dim_grey_approx"				value="#5C5C5C"/>
 	<color name="bombay_approx"					value="#AAAAAA"/>
 	<color name="light_grey_approx"			value="#DCDCDC"/>
+	<color name="lighter_grey" 					value="#F6F6F6"/>
 	<color name="white"									value="#FFFFFF"/>
 	<color name="canary_yellow"					value="#FFEF00"/> <!-- added this because SciNotes doesn't define it but does use it -->
 
-  <!-- Global Settings -->
+	<!-- Notes
 
-  <style name="text"                        foreground="black" background="white"/>
-  <style name="selection"                   foreground="white" background="orange_approx"/>
-  <style name="cursor"                      foreground="black"/>
-  <style name="current-line"                background="light_grey_approx"/>
-  <style name="line-numbers"                foreground="black" background="light_grey_approx"/>
-  <style name="draw-spaces"                 foreground="light_grey_approx"/>
-  
-  <!-- Bracket Matching -->
-  <style name="bracket-match"               background="pale_green_approx"/>
-  <style name="bracket-mismatch"            background="red" bold="true"/>
-  
-  <!-- Search Matching -->
-  <style name="search-match"                foreground="black" background="canary_yellow"/>
+			 name attribute is mandatory, but possible supplementary attributes are
+			 foreground, background, italic, bold, underline and strikethrough
+			 where foreground and background are either colours defined in a 
+			 colour tag above, or a hex value of the format #([0-9a-F]{6}), or
+			 a colour understood by Gdk prefixed with a #.
 
-  <!-- Bookmarks FIXME
-  <style name="bookmark"                    background="white"/> WHATAMI?-->
+			 Indented style are mapped in their .lang to their parent style, but 
+			 this can be overidden by uncommenting and setting attributes to 
+			 use them as distinct default styles.
 
-  <!-- Comments -->
-  <style name="def:comment"                 foreground="christi" italic="true"/>
-  <style name="def:underlined"              foreground="blue" underline="true" italic="false"/>
-  <!-- FIXME<style name="def:shebang"                 foreground="sky_blue" italic="true"/>-->
-  <!-- FIXME<style name="def:doc-comment-element"     bold="true"/> WHATAMI? -->
+			 TODO - which colours does Gdk understand? can you refer to system
+			 defined colours e.g. #desktopbackgroundcolour ? -->
 
-  <!-- Constants and Variables-->
-  <style name="def:constant"                foreground="orchid"/>
-  <style name="def:string"                  foreground="rosy_brown"/>
-  <style name="def:special-char"            foreground="orange_approx"/>
-  <style name="def:special-constant"        foreground="orchid"/>
-  <style name="def:number"                  foreground="rosy_brown"/>
-  <style name="def:floating-point"          foreground="rosy_brown"/>
-  <style name="def:keyword"                 foreground="firebrick"/>
-  <style name="def:builtin"                 foreground="puerto_rico_approx"/>
-  <!-- FIXME<style name="def:variable"                foreground="light_grey"/> WHATAMI? A defined variable in bash? -->
-  
-  <!-- Identifiers -->
-  <style name="def:identifier"              foreground="black"/>
-  <style name="def:function"                foreground="lilac_bush_approx" underline="true"/><!--use-style="def:identifier"/>-->
+
+
+  <!-- GLOBALS ( see http://developer.gnome.org/gtksourceview/stable/style-reference.html) -->
+
+	<!-- GtkSourceView styles -->
+	<style name="text"                  foreground="black" 								background="white" 						/>
+	<style name="selection"             foreground="black" 								background="light_grey_approx" 		/>
+	<style name="selection-unfocused" 	foreground="black" 								background="lighter_grey" 		/>
+	<style name="cursor"                foreground="black" 																							/>
+	<style name="cursor-secondary"      foreground="black" 																							/>
+	<style name="current-line"          																	background="lighter_grey"/>
+	<style name="line-numbers"          foreground="black" 								background="light_grey_approx"/>
+	<style name="bracket-match"               														background="pale_green_approx"/>
+	<style name="bracket-mismatch"      																	background="red" 								bold="true" 	/>
+			
+	<!-- Plugins / Other -->
+	<style name="search-match"          foreground="black" 								background="canary_yellow" 		/>
+	<style name="draw-spaces"           foreground="light_grey_approx" 																	/> <!-- Draw Spaces and Tabs plugin --> 
+
+
+
+	<!-- DEFAULTS (def.lang, see for details) --> 
+
+	<!-- Comments -->
+	<style name="def:comment"                 foreground="christi" italic="true"/>
+		<style name="def:shebang"                 foreground="firebrick" italic="false" bold="true"/>
+		<!--<style name="def:doc-comment" 						foreground="#colour"/>-->
+	<style name="def:doc-comment-element"     bold="true"/>
+
+	<!-- Constants -->
+	<style name="def:constant"                foreground="orchid"/>
+		<!--<style name="def:character" 							use-style="def:constant"/>-->
+		<style name="def:string"                  foreground="rosy_brown"/>
+		<style name="def:special-constant"        foreground="orchid"/>
+			<style name="def:boolean" 								foreground="orchid"/>
+	<style name="def:special-char"            foreground="orange_approx"/>
+	<style name="def:number"                  foreground="rosy_brown"/>
+		<style name="def:floating-point" 					foreground="rosy_brown"/>
+		<!--<style name="def:decimal" 								use-style="def:number"/>-->
+		<!--<style name="def:base-n-integer" 					use-style="def:number"/>-->
+		<!--<style name="def:complex" 			 					use-style="def:number"/>-->
+
+	<!-- Identifiers -->
+	<style name="def:identifier"              foreground="cadet_blue"/>
+		<style name="def:function"                foreground="lilac_bush_approx" underline="true"/>
+		<style name="def:builtin"                 foreground="puerto_rico_approx"/>
+
+	<!-- Statement group -->
+	<style name="def:statement"               foreground="bright_orange"/>
+		<style name="def:operator" 								foreground="dim_grey_approx"/>
+		<style name="def:keyword"                 foreground="firebrick"/>
+
+	<style name="def:variable"                foreground="cadet_blue"/> 
+
+	<!-- Types -->
+	<style name="def:type"                    foreground="cadet_blue"/>
 	
-	<!-- Additional styles not in cobalt.xml-->
-	<style name="def:operator" 								foreground="dim_grey_approx"/>
-  <!-- Statements -->
-  <!--- FIXME<style name="def:statement"               foreground="bright_orange"/> WHATAMI? -->
+	<!-- Others -->
+	<style name="def:preprocessor"            foreground="puerto_rico_approx"/> <!-- this is used by default for xml:processing-instruction, xml:entity -->
+	<style name="def:error"                   background="red" /> <!-- gotta be honest, I'm not sure how lang specs actually apply this style -->
+		<!--<style name="def:reserved" 		            foreground="puerto_rico_approx"/>-->
+	<style name="def:note"                    foreground="firebrick" background="canary_yellow" bold="true"/>
+	<style name="def:underlined"              foreground="blue" underline="true" italic="false"/>
 
-  <!-- Types -->
-  <!--- FIXME<style name="def:type"                    foreground="teal_blue"/> WHATAMI? -->
-  
-  <!-- Others -->
-  <!--FIXME <style name="def:error"                   foreground="white" background="dark_red" bold="true"/> -->
-  <style name="def:note"                    foreground="firebrick" bold="true"/> <!--
-  <style name="def:net-address-in-comment"  foreground="teal_blue" italic="false" underline="true"/>
-  <style name="def:preprocessor"            foreground="light_grey"/> WHATAMI? -->
-    
-  <!-- Unknown? FIXME
-  <style name="def:specials"                foreground="white" background="neon_pink"/> -->
-  <style name="def:boolean"                 foreground="red"/> 
 
+
+	<!-- LANGUAGE-SPECIFIC (see <language>.lang for details) --> 
+
+ 
   <!-- C Styles 
   <style name="c:preprocessor"              foreground="teal_blue" bold="true"/>
   <style name="c:included-file"             foreground="spring_green"/>
@@ -128,18 +155,18 @@
 
   <!-- SH Styles FIXME
   <style name="sh:function"                 foreground="neon_pink"/> -->
+	<style name="sh:variable" 								foreground="cadet_blue"/>
   
   <!-- XML Styles FIXME -->
   <style name="xml:attribute-name"          foreground="dark_orchid_approx"/>
-<!--  <style name="xml:element-name"            foreground="teal_blue"/>-->
-<!--  <style name="xml:entity"                  foreground="#blue"/>-->
-<!--  <style name="xml:processing-instruction"  bold="true"/> -->
+  <style name="xml:element-name"            foreground="cadet_blue"/>
+	<style name="xml:entity"                  foreground="orchid"/>
+	<style name="xml:processing-instruction"  foreground="firebrick"/> <!-- def:preprocessor -->
 
 	<!-- Latex Styles -->
 	<style name="latex:inline-math"		foreground="cardinal"/>
-
+ 
 	<!-- Scilab Styles -->
-	<style name="scilab:boolean" 			foreground="orchid"/>
 	<style name="scilab:openclose" 		foreground="blue"/>
 	<style name="scilab:functionref"  underline="true"/>
 	<style name="scilab:primitive" 		foreground="puerto_rico_approx"/>
