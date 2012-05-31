@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ This file is part of GtkSourceView.
+
+ Copyright (C) 2012 Alex Corrie <ajccode@gmail.com>
+
+ GtkSourceView is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ GtkSourceView is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+-->
+
+<style-scheme id="scinotes" _name="SciNotes" version="1.0">
+  <author>Alex Corrie</author>
+  <_description>Port of the SciNotes (Scilab 5.3.3) schema</_description>
+
+<!-- Colour Palette -->
+	<color name="christi"								value="#01A801"/>
+	<color name="pale_green_approx"			value="#90F790"/>
+	<color name="blue"									value="#0000FF"/>
+	<color name="dark_orchid_approx"		value="#4A55DB"/>
+	<color name="puerto_rico_approx"		value="#32B9B9"/>
+	<color name="cadet_blue"						value="#5F9EA0"/>
+	<color name="cardinal"							value="#8B2252"/>
+	<color name="purple"								value="#A020F0"/>
+	<color name="lilac_bush_approx"			value="#AE5CB0"/>
+	<color name="orchid"								value="#DA70D6"/>
+	<color name="shilo_approx"					value="#E9B1B1"/>
+	<color name="rosy_brown"						value="#BC8F8F"/>
+	<color name="prairie_sand_approx"		value="#834310"/>
+	<color name="firebrick"							value="#B01813"/>
+	<color name="red"										value="#FF0000"/>
+	<color name="orange_approx"					value="#FFAA00"/>
+	<color name="black"									value="#000000"/>
+	<color name="dim_grey_approx"				value="#5C5C5C"/>
+	<color name="bombay_approx"					value="#AAAAAA"/>
+	<color name="light_grey_approx"			value="#DCDCDC"/>
+	<color name="white"									value="#FFFFFF"/>
+	<color name="canary_yellow"					value="#FFEF00"/> <!-- added this because SciNotes doesn't define it but does use it -->
+
+  <!-- Global Settings -->
+
+  <style name="text"                        foreground="black" background="white"/>
+  <style name="selection"                   foreground="white" background="orange_approx"/>
+  <style name="cursor"                      foreground="black"/>
+  <style name="current-line"                background="light_grey_approx"/>
+  <style name="line-numbers"                foreground="black" background="light_grey_approx"/>
+  <style name="draw-spaces"                 foreground="light_grey_approx"/>
+  
+  <!-- Bracket Matching -->
+  <style name="bracket-match"               background="pale_green_approx"/>
+  <style name="bracket-mismatch"            background="red" bold="true"/>
+  
+  <!-- Search Matching -->
+  <style name="search-match"                foreground="black" background="canary_yellow"/>
+
+  <!-- Bookmarks FIXME
+  <style name="bookmark"                    background="white"/> WHATAMI?-->
+
+  <!-- Comments -->
+  <style name="def:comment"                 foreground="christi" italic="true"/>
+  <style name="def:underlined"              foreground="blue" underline="true" italic="false"/>
+  <!-- FIXME<style name="def:shebang"                 foreground="sky_blue" italic="true"/>-->
+  <!-- FIXME<style name="def:doc-comment-element"     bold="true"/> WHATAMI? -->
+
+  <!-- Constants and Variables-->
+  <style name="def:constant"                foreground="orchid"/>
+  <style name="def:string"                  foreground="rosy_brown"/>
+  <style name="def:special-char"            foreground="orange_approx"/>
+  <style name="def:special-constant"        foreground="orchid"/>
+  <style name="def:number"                  foreground="rosy_brown"/>
+  <style name="def:floating-point"          foreground="rosy_brown"/>
+  <style name="def:keyword"                 foreground="firebrick"/>
+  <style name="def:builtin"                 foreground="puerto_rico_approx"/>
+  <!-- FIXME<style name="def:variable"                foreground="light_grey"/> WHATAMI? A defined variable in bash? -->
+  
+  <!-- Identifiers -->
+  <style name="def:identifier"              foreground="black"/>
+  <style name="def:function"                foreground="lilac_bush_approx" underline="true"/><!--use-style="def:identifier"/>-->
+	
+	<!-- Additional styles not in cobalt.xml-->
+	<style name="def:operator" 								foreground="dim_grey_approx"/>
+  <!-- Statements -->
+  <!--- FIXME<style name="def:statement"               foreground="bright_orange"/> WHATAMI? -->
+
+  <!-- Types -->
+  <!--- FIXME<style name="def:type"                    foreground="teal_blue"/> WHATAMI? -->
+  
+  <!-- Others -->
+  <!--FIXME <style name="def:error"                   foreground="white" background="dark_red" bold="true"/> -->
+  <style name="def:note"                    foreground="firebrick" bold="true"/> <!--
+  <style name="def:net-address-in-comment"  foreground="teal_blue" italic="false" underline="true"/>
+  <style name="def:preprocessor"            foreground="light_grey"/> WHATAMI? -->
+    
+  <!-- Unknown? FIXME
+  <style name="def:specials"                foreground="white" background="neon_pink"/> -->
+  <style name="def:boolean"                 foreground="red"/> 
+
+  <!-- C Styles 
+  <style name="c:preprocessor"              foreground="teal_blue" bold="true"/>
+  <style name="c:included-file"             foreground="spring_green"/>
+  <style name="c:common-defines"            foreground="sky_blue" bold="true"/> -->
+
+  <!-- Diff Styles FIXME
+  <style name="diff:ignore"                 foreground="bluish_grey"/>
+  <style name="diff:added-line"             foreground="faded_yellow"/>
+  <style name="diff:removed-line"           foreground="spring_green"/>
+  <style name="diff:changed-line"           foreground="bright_orange"/>
+  <style name="diff:diff-file"              foreground="sky_blue" bold="true"/>
+  <style name="diff:location"               foreground="sky_blue"/>
+  <style name="diff:special-case"           foreground="nail_polish_pink" bold="true"/> -->
+
+  <!-- Ruby Styles FIXME
+  <style name="ruby:module-handler"         foreground="teal_blue"/>
+  <style name="ruby:symbol"                 foreground="nail_polish_pink"/>
+  <style name="ruby:regex"                  foreground="teal_blue"/> -->
+
+  <!-- SH Styles FIXME
+  <style name="sh:function"                 foreground="neon_pink"/> -->
+  
+  <!-- XML Styles FIXME -->
+  <style name="xml:attribute-name"          foreground="dark_orchid_approx"/>
+<!--  <style name="xml:element-name"            foreground="teal_blue"/>-->
+<!--  <style name="xml:entity"                  foreground="#blue"/>-->
+<!--  <style name="xml:processing-instruction"  bold="true"/> -->
+
+	<!-- Latex Styles -->
+	<style name="latex:inline-math"		foreground="cardinal"/>
+
+	<!-- Scilab Styles -->
+	<style name="scilab:boolean" 			foreground="orchid"/>
+	<style name="scilab:openclose" 		foreground="blue"/>
+	<style name="scilab:functionref"  underline="true"/>
+	<style name="scilab:primitive" 		foreground="puerto_rico_approx"/>
+	<style name="scilab:structure" 		foreground="purple"/>
+	<style name="scilab:control" 			foreground="cadet_blue"/>
+	<style name="scilab:field" 				foreground="dim_grey_approx"/>
+	
+
+
+</style-scheme>
