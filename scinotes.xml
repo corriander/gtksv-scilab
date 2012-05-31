@@ -46,7 +46,7 @@
 	<color name="dim_grey_approx"				value="#5C5C5C"/>
 	<color name="bombay_approx"					value="#AAAAAA"/>
 	<color name="light_grey_approx"			value="#DCDCDC"/>
-	<color name="lighter_grey" 					value="#F6F6F6"/>
+	<color name="lighter_grey" 					value="#F4F4F4"/> <!-- added this because light_grey_approx is a bit dark for some purposes -->
 	<color name="white"									value="#FFFFFF"/>
 	<color name="canary_yellow"					value="#FFEF00"/> <!-- added this because SciNotes doesn't define it but does use it -->
 
@@ -108,7 +108,7 @@
 		<!--<style name="def:complex" 			 					use-style="def:number"/>-->
 
 	<!-- Identifiers -->
-	<style name="def:identifier"              foreground="cadet_blue"/>
+	<style name="def:identifier"              foreground="purple"/>
 		<style name="def:function"                foreground="lilac_bush_approx" underline="true"/>
 		<style name="def:builtin"                 foreground="puerto_rico_approx"/>
 
@@ -157,11 +157,12 @@
   <style name="sh:function"                 foreground="neon_pink"/> -->
 	<style name="sh:variable" 								foreground="cadet_blue"/>
   
-  <!-- XML Styles FIXME -->
-  <style name="xml:attribute-name"          foreground="dark_orchid_approx"/>
-  <style name="xml:element-name"            foreground="cadet_blue"/>
-	<style name="xml:entity"                  foreground="orchid"/>
-	<style name="xml:processing-instruction"  foreground="firebrick"/> <!-- def:preprocessor -->
+  <!-- XML Styles -->
+  <style name="xml:attribute-name"          foreground="orchid"/> <!-- def:type -->
+	<!--<style name="xml:attribute-value" 				foreground="puerto_rico_approx"/>--> <!-- def:string -->
+  <!--<style name="xml:element-name"            foreground="cadet_blue"/>--> <!-- def:identifier -->
+	<style name="xml:entity"                  foreground="orchid"/> <!-- def:preprocessor -->
+	<style name="xml:processing-instruction"  foreground="cardinal"/> <!-- def:preprocessor -->
 
 	<!-- Latex Styles -->
 	<style name="latex:inline-math"		foreground="cardinal"/>
