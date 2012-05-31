@@ -39,7 +39,7 @@
 		<style id="boolean" 						_name="Boolean" 						map-to="def:boolean"/>
 		<style id="number" 							_name="Number" 							map-to="def:number"/>
 		<style id="floating-point" 			_name="Floating Point" 			map-to="def:floating-point"/>
-		<style id="field" 							_name="Field" 							/>
+		<style id="field" 							_name="Field" 							map-to="def:operator"/>
 		<!-- Operators and special characters -->
  		<style id="operator" 						_name="Operator" 						map-to="def:operator"/>
  		<style id="openclose" 					_name="Brackets" 						map-to="def:operator"/> 

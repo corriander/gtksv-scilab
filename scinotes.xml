@@ -168,12 +168,12 @@
 	<style name="latex:inline-math"		foreground="cardinal"/>
  
 	<!-- Scilab Styles -->
-	<style name="scilab:openclose" 		foreground="blue"/>
+	<style name="scilab:openclose" 		foreground="dark_orchid_approx"/>
 	<style name="scilab:functionref"  underline="true"/>
 	<style name="scilab:primitive" 		foreground="puerto_rico_approx"/>
 	<style name="scilab:structure" 		foreground="purple"/>
 	<style name="scilab:control" 			foreground="cadet_blue"/>
-	<style name="scilab:field" 				foreground="dim_grey_approx"/>
+	<style name="scilab:field" 				foreground="bombay_approx"/>
 	
 
 
