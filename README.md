@@ -1,12 +1,12 @@
 gtksv-scilab
 ============
 
-Scilab syntax highlighting via GtkSourceView 3 (used by programs such as gedit). 
+Scilab syntax highlighting for GtkSourceView enabled programs (e.g. gedit). 
 
 This repo houses an attempt to achieve two goals: 
 
-	- Emulate SciNotes 1.1 default highlighting behaviour as closely as possible.
-	- Provide an alternative, toned down, interpretation of the default schema.
+1. Emulate SciNotes 1.1 default highlighting behaviour as closely as possible.
+2. Provide an alternative, toned down, interpretation of the default schema.
 
 Please note that this has been developed on gedit 3.2.3. It should work in other
 contexts (other gedit versions or other GtkSV3-enabled applications) but it's 
@@ -16,7 +16,7 @@ Current status
 --------------
 
 scilab.lang is in a working state
-scinotes.xml is a WIP
+scinotes.xml is in a working state 
 scilab.xml is TODO
 
 Installation
