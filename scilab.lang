@@ -48,8 +48,8 @@
 		<style id="reserved-constant" 	_name="Reserved Constant" 	map-to="def:special-constant"/>
 		<style id="primitive" 					_name="Primitive"						map-to="def:function"/>
 		<style id="macro"    						_name="Macro"    						map-to="def:function"/>
-		<style id="control" 						_name="Control Keyword" 		/>
-		<style id="structure" 					_name="Structural Keyword" 	/>
+		<style id="control" 						_name="Control Keyword" 		map-to="def:keyword"/>
+		<style id="structure" 					_name="Structural Keyword" 	map-to="def:keyword"/>
 		<style id="functionkwd" 				_name="Function Keyword" 		map-to="def:keyword"/>
   </styles>
 
