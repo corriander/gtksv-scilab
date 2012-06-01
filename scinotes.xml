@@ -70,20 +70,20 @@
   <!-- GLOBALS ( see http://developer.gnome.org/gtksourceview/stable/style-reference.html) -->
 
 	<!-- GtkSourceView styles -->
-	<style name="text"                  foreground="black" 								background="white" 						/>
-	<style name="selection"             foreground="black" 								background="light_grey_approx" 		/>
-	<style name="selection-unfocused" 	foreground="black" 								background="lighter_grey" 		/>
-	<style name="cursor"                foreground="black" 																							/>
-	<style name="cursor-secondary"      foreground="black" 																							/>
-	<style name="current-line"          																	background="lighter_grey"/>
-	<style name="line-numbers"          foreground="black" 								background="light_grey_approx"/>
-	<style name="bracket-match"               														background="pale_green_approx"/>
-	<style name="bracket-mismatch"      																	background="red" 								bold="true" 	/>
+	<style name="text"                  foreground="black" background="white"/>
+	<style name="selection"             foreground="black" background="light_grey_approx"/>
+	<style name="selection-unfocused" 	foreground="black" background="lighter_grey"/>
+	<style name="cursor"                foreground="black" />
+	<style name="cursor-secondary"      foreground="black" />
+	<style name="current-line"          	background="lighter_grey"/>
+	<style name="line-numbers"          foreground="black" background="light_grey_approx"/>
+	<style name="bracket-match"           background="pale_green_approx"/>
+	<style name="bracket-mismatch"      	background="red" bold="true"/>
 			
 	<!-- Plugins / Other -->
-	<style name="search-match"          foreground="black" 								background="canary_yellow" 		/>
-	<style name="draw-spaces"           foreground="light_grey_approx" 																	/> <!-- Draw Spaces and Tabs plugin --> 
-
+	<style name="search-match"          foreground="black" background="canary_yellow" />
+	<style name="draw-spaces"           foreground="light_grey_approx" /> <!-- Draw Spaces and Tabs plugin --> 
+	<style name="right-margin"          foreground="light_grey_approx" background="lighter_grey"/>
 
 
 	<!-- DEFAULTS (def.lang, see for details) --> 
