@@ -59,7 +59,7 @@
   <definitions>
 
 		<!-- Numbers and data structures -->
-
+		<define-regex id="non-numeric">[a-zA-Z_%#?]</define-regex>
 		<define-regex id="word-char">[\w%#?]</define-regex>
 
 		<define-regex id="boolean" extended="true" case-sensitive="false">
@@ -94,9 +94,9 @@
     </context>
 
 		<define-regex id="float" extended="true" case-sensitive="false">
-			(?&lt;!\%{word-char}) # Don't run on from a word or decimal point
+			(?&lt;!\%{word-char}) 	 # Don't run on from a word or decimal point
 			([0-9]*\.)?[0-9]*?([0-9]+[DdEe])[+-]?([0-9]*\.?[0-9]*)?
-			(?!\%{word-char}) 		 # Don't run into a word or decimal point
+			(?!\%{word-char}) 			 # Don't run into a word or decimal point
 		</define-regex>
 
     <context id="floating-point-number" style-ref="floating-point">
@@ -104,7 +104,7 @@
     </context>
 
 		<context id="field" style-ref="field">
-			<match>(?&lt;=\%{word-char})\.\%{word-char}*</match>
+			<match>(?&lt;=\%{word-char})\.\%{non-numeric}\%{word-char}*</match>
 		</context>
 
 		<!-- Operators and special characters -->
