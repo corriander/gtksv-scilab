@@ -38,6 +38,7 @@
 		<!-- Numbers -->
 		<style id="boolean" 						_name="Boolean" 						map-to="def:boolean"/>
 		<style id="number" 							_name="Number" 							map-to="def:number"/>
+		<style id="decimal" 						_name="Decimal Number" 			map-to="def:number"/>
 		<style id="floating-point" 			_name="Floating Point" 			map-to="def:floating-point"/>
 		<style id="field" 							_name="Field" 							map-to="def:operator"/>
 		<!-- Operators and special characters -->
@@ -53,36 +54,69 @@
 		<style id="functionkwd" 				_name="Function Keyword" 		map-to="def:keyword"/>
   </styles>
 
+	<keyword-char-class>[\w%#]</keyword-char-class>
+
   <definitions>
 
 		<!-- Numbers and data structures -->
 
+		<define-regex id="word-char">[\w%#?]</define-regex>
+
+		<define-regex id="boolean" extended="true" case-sensitive="false">
+			(?&lt;!\%{word-char})		# Don't run on from a word
+			%[ft]
+			(?!\%{word-char}) 			# Don't run into a word
+		</define-regex>
+			
     <context id="boolean" style-ref="boolean">
-			<match>(?&lt;![\w%\.])%[fFtT]\%]</match>
+			<match>\%{boolean}</match>
+<!--			<match>(?&lt;!\%{word-char})%[fFtT](?!\%{word-char})</match>-->
 		</context>
 
+		<define-regex id="number" extended="true">
+			(?&lt;!\%{word-char}|\.) # Don't run on from a word or decimal point
+			[0-9]*
+			(?!\%{word-char}|\.) 		 # Don't run into a word or decimal point
+		</define-regex>
+
     <context id="number" style-ref="number">
-      <match>\%[[0-9]*\%]</match>
+      <match>\%{number}</match>
     </context>
-			
+
+		<define-regex id="decimal" extended="true">
+			(?&lt;!\%{word-char}|\.) # Don't run on from a word or decimal point
+			[0-9]*\.[0-9]*
+			(?!\%{word-char}|\.) 		 # Don't run into a word or decimal point
+		</define-regex>
+
+    <context id="decimal" style-ref="decimal">
+      <match>\%{decimal}</match>
+    </context>
+
+		<define-regex id="float" extended="true" case-sensitive="false">
+			(?&lt;!\%{word-char}) # Don't run on from a word or decimal point
+			([0-9]*\.)?[0-9]*?([0-9]+[DdEe])[+-]?([0-9]*\.?[0-9]*)?
+			(?!\%{word-char}) 		 # Don't run into a word or decimal point
+		</define-regex>
+
     <context id="floating-point-number" style-ref="floating-point">
-       <match>(?&lt;![\w%])([0-9]*\.)?[0-9]*?([0-9]+[DdEe])[+-]?([0-9]*\.?[0-9]*)?</match>
+       <match>\%{float}</match>
     </context>
 
 		<context id="field" style-ref="field">
-			<match>(?&lt;=\w)\.[a-zA-Z][a-zA-Z0-9%#?\_]*</match>
+			<match>(?&lt;=\%{word-char})\.\%{word-char}*</match>
 		</context>
 
 		<!-- Operators and special characters -->
 
 		<define-regex id="operators" extended="true">
-			\+ | \- | 
-			\.?\*\.? | 
-			[=&lt;&gt;]?=(?!=) | &lt;?&gt; | &lt; |
-			\.?\/\.?(?!\/) |
-			\.?\\\.? |
-			\.?\^ |
-			\~ | \| | &amp;
+			\+ | \- | 															#   +   -
+			\.?\*\.? | 															#   *   .*   *.   .*.
+			[=&lt;&gt;]?=(?!=) | &lt;?&gt; | &lt; | #   =  lt  gt  ==  lt=  gt= ltgt  (no = suffix to these)
+			\.?\/\.?(?!\/) | 												#   /   ./   /.   ./.   (no / suffix to these)
+			\.?\\\.? | 															#   \   .\   \.   .\.
+			\.?\^ |																	#   ^   .^
+			\~ | \| | &amp; 												#   ~ | ampersand
 		</define-regex>
 
 		<context id="operator" style-ref="operator">
@@ -2648,6 +2682,7 @@
       	<include>
 					<context ref="boolean"/>
 					<context ref="number"/>
+					<context ref="decimal"/>
 					<context ref="operator"/>
 					<context ref="openclose"/>
 					<context ref="special-character"/>
