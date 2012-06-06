@@ -83,7 +83,7 @@
 	<!-- Plugins / Other -->
 	<style name="search-match"          foreground="black" background="canary_yellow" />
 	<style name="draw-spaces"           foreground="light_grey_approx" /> <!-- Draw Spaces and Tabs plugin --> 
-	<style name="right-margin"          foreground="light_grey_approx" background="lighter_grey"/>
+<!--	<style name="right-margin"          foreground="light_grey_approx" background="lighter_grey"/>--> <!-- This doesn't appear to do anything... -->
 
 
 	<!-- DEFAULTS (def.lang, see for details) --> 
